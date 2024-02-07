@@ -188,7 +188,6 @@ export const Exercise = defineType({
 							description: "This image is on the left side of the slider",
 							type: "image",
 							fields: [altText],
-							validation: (Rule) => Rule.required(),
 						}),
 						defineField({
 							name: "right_value",
@@ -203,7 +202,6 @@ export const Exercise = defineType({
 							description: "This Image is on the right side of the slider",
 							type: "image",
 							fields: [altText],
-							validation: (Rule) => Rule.required(),
 						}),
 					],
 				}),

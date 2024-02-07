@@ -8,8 +8,9 @@ import { type SlidersParticipant } from "./types"
 const submitSliderSchema = zfd.formData({
 	isGroup: zfd.checkbox(),
 	exerciseId: zfd.text(),
-	questionName: zfd.text(),
-	value: zfd.numeric(),
+	slug: zfd.text(),
+	todayValue: zfd.numeric(),
+	tomorrowValue: zfd.numeric(),
 })
 
 // TODO: Error Handling
@@ -18,7 +19,7 @@ export async function submitSliderAction(formData: FormData) {
 
 	const participant = await client.findParticipantOrThrow<SlidersParticipant>()
 
-	const oldAnswers = participant.answers?.[data.exerciseId]?.answers ?? []
+	const oldAnswers = participant.answers?.[data.exerciseId]?.answers ?? {}
 	const meta = data.isGroup
 		? {
 				type: "group" as const,
@@ -31,25 +32,12 @@ export async function submitSliderAction(formData: FormData) {
 		[data.exerciseId]: {
 			...participant.answers?.[data.exerciseId],
 			meta,
-			answers: [],
+			answers: {
+				...oldAnswers,
+				[data.slug]:{today: data.todayValue, tomorrow: data.tomorrowValue}
+			},
 		},
 	}
-
-	const existingAnswer = oldAnswers.findIndex(
-		(a) => a.question_text === data.questionName,
-	)
-
-	if (existingAnswer > -1) {
-		oldAnswers?.splice(existingAnswer, 1)
-	}
-
-	answers[data.exerciseId].answers = [
-		...oldAnswers,
-		{
-			question_text: data.questionName,
-			value: data.value,
-		},
-	]
 
 	await sanity
 		.patch(participant._id)

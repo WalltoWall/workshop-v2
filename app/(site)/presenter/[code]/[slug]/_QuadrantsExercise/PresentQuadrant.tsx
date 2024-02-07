@@ -71,7 +71,7 @@ export const PresentQuadrant = ({
 				{answers.map((answer, index) => (
 					<QuadrantAnswer
 						key={index}
-						answer={answer}
+						answer={ansshowPhotoswer}
 						showToday={showToday}
 						showTomorrow={showTomorrow}
 						showLabels={showLabels}
