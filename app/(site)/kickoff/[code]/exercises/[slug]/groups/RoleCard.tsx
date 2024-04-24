@@ -28,12 +28,7 @@ export const RoleCard = ({
 			)}
 			onClick={() => onClick(role)}
 		>
-			<Image
-				src={img}
-				alt=""
-				placeholder="blur"
-				className="absolute right-2 top-2"
-			/>
+			<Image src={img} alt="" className="absolute right-2 top-2" />
 
 			<Text
 				asChild

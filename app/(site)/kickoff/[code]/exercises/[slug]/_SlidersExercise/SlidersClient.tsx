@@ -47,7 +47,7 @@ export const SlidersClient = ({ exercise, participant, groupSlug }: Props) => {
 					item={slider}
 					answer={answer}
 					actions={actions}
-					readOnly={role === "contributor"}
+					readOnly={role !== "captain"}
 				/>
 			)}
 

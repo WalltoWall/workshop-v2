@@ -1,11 +1,6 @@
 import React from "react"
-import dynamic from "next/dynamic"
 import type * as ST from "@/sanity/types.gen"
-
-const QuadrantsPresenterViewClient = dynamic(
-	() => import("./QuadrantsPresenterViewClient"),
-	{ ssr: false },
-)
+import QuadrantsPresenterViewClient from "./QuadrantsPresenterViewClient"
 
 interface QuadrantsPresenterViewProps {
 	exercise: ST.Exercise

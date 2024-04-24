@@ -1,13 +1,9 @@
-import dynamic from "next/dynamic"
 import { client } from "@/sanity/client"
 import type * as ST from "@/sanity/types.gen"
+import SlidersClient from "./SlidersClient"
 import type { SlidersParticipant } from "./types"
 
 export type SliderItem = NonNullable<ST.Exercise["sliders"]>[number]
-
-const SlidersClient = dynamic(() => import("./SlidersClient"), {
-	ssr: false,
-})
 
 type Props = {
 	exercise: ST.Exercise

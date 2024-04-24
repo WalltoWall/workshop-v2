@@ -1,11 +1,6 @@
 import React from "react"
-import dynamic from "next/dynamic"
 import type { SlidersExercise } from "@/app/(site)/kickoff/[code]/exercises/[slug]/_SlidersExercise/types"
-
-const SlidersPresenterViewClient = dynamic(
-	() => import("./SlidersPresenterViewClient"),
-	{ ssr: false },
-)
+import SlidersPresenterViewClient from "./SlidersPresenterViewClient"
 
 interface SlidersPresenterViewProps {
 	exercise: SlidersExercise

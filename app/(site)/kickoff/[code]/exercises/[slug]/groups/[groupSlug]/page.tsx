@@ -1,15 +1,10 @@
-import dynamic from "next/dynamic"
 import { notFound } from "next/navigation"
 import { client } from "@/sanity/client"
 import { BrainstormExercise } from "../../_BrainstormExercise/BrainstormExercise"
 import { QuadrantsExercise } from "../../_QuadrantsExercise/QuadrantsExercise"
 import { SlidersExercise } from "../../_SlidersExercise/SlidersExercise"
 import { FormExercise } from "../../FormsExercise"
-
-const GroupExerciseSubmissionForm = dynamic(
-	() => import("../GroupExerciseSubmissionForm"),
-	{ ssr: false },
-)
+import GroupExerciseSubmissionForm from "../GroupExerciseSubmissionForm"
 
 type Props = {
 	params: { code: string; slug: string; groupSlug: string }

@@ -1,11 +1,6 @@
 import React from "react"
-import dynamic from "next/dynamic"
 import { type BrainstormExercise } from "@/app/(site)/kickoff/[code]/exercises/[slug]/_BrainstormExercise/types"
-
-const BrainstormPresenterViewClient = dynamic(
-	() => import("./BrainstormPresenterViewClient"),
-	{ ssr: false },
-)
+import BrainstormPresenterViewClient from "./BrainstormPresenterViewClient"
 
 type Props = { exercise: BrainstormExercise }
 

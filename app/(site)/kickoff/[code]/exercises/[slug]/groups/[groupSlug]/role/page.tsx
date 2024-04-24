@@ -1,8 +1,6 @@
-import dynamic from "next/dynamic"
 import { notFound } from "next/navigation"
 import { client } from "@/sanity/client"
-
-const RoleSelector = dynamic(() => import("../../RoleSelector"), { ssr: false })
+import RoleSelector from "../../RoleSelector"
 
 type Props = {
 	params: { code: string; slug: string; groupSlug: string }
