@@ -61,9 +61,7 @@ const CodeInput = () => {
 				pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
 				containerClassName="group flex items-center"
 				className="text-16"
-				onChange={(value) => {
-					setShowSubmit(value.length === 7)
-				}}
+				onChange={(value) => setShowSubmit(value.length === 7)}
 				render={({ slots }) => (
 					<>
 						<div className="flex gap-1">

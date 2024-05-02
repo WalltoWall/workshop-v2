@@ -14,7 +14,6 @@ export const env = createEnv({
 	 * Environment variables available on the client (and server).
 	 */
 	client: {
-		NEXT_PUBLIC_ROOT_URL: z.string().url().default("http://localhost:3000"),
 		NEXT_PUBLIC_SANITY_PROJECT_ID: z.string(),
 		NEXT_PUBLIC_SANITY_DATASET: z.string().default("development"),
 		NEXT_PUBLIC_SANITY_API_VERSION: z.string().default("2023-02-10"),
@@ -43,7 +42,6 @@ export const env = createEnv({
 	runtimeEnv: {
 		SANITY_TOKEN: process.env.SANITY_TOKEN,
 
-		NEXT_PUBLIC_ROOT_URL: process.env.NEXT_PUBLIC_ROOT_URL,
 		NEXT_PUBLIC_SANITY_PROJECT_ID: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
 		NEXT_PUBLIC_SANITY_DATASET: process.env.NEXT_PUBLIC_SANITY_DATASET,
 		NEXT_PUBLIC_SANITY_API_VERSION: process.env.NEXT_PUBLIC_SANITY_API_VERSION,

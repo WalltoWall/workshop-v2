@@ -1,19 +1,17 @@
 import { notFound, redirect } from "next/navigation"
 import { client } from "@/sanity/client"
-import { BrainstormExercise } from "./_BrainstormExercise/BrainstormExercise"
-import { QuadrantsExercise } from "./_QuadrantsExercise/QuadrantsExercise"
-import { SlidersExercise } from "./_SlidersExercise/SlidersExercise"
 import { FormExercise } from "./FormsExercise"
 import { InstructionsModal } from "./InstructionsModal"
 
-type Props = {
+interface Props {
 	params: { code: string; slug: string }
 }
 
 const ExercisePage = async (props: Props) => {
+	const participant = await client.findParticipantOrThrow()
 	const exercise = await client.findExerciseBySlug(props.params.slug)
-
 	if (!exercise) notFound()
+
 	if (exercise.groups && exercise.groups.length >= 1) {
 		redirect(
 			`/kickoff/${props.params.code}/exercises/${props.params.slug}/groups`,
@@ -27,20 +25,9 @@ const ExercisePage = async (props: Props) => {
 				instructions={exercise.instructions}
 			/>
 
-			{exercise.type === "brainstorm" && (
-				<BrainstormExercise
-					exercise={exercise}
-					kickoffCode={props.params.code}
-				/>
+			{exercise.type === "form" && (
+				<FormExercise exercise={exercise} participant={participant} />
 			)}
-			{exercise.type === "sliders" && <SlidersExercise exercise={exercise} />}
-			{exercise.type === "quadrants" && (
-				<QuadrantsExercise
-					exercise={exercise}
-					kickoffCode={props.params.code}
-				/>
-			)}
-			{exercise.type === "form" && <FormExercise exercise={exercise} />}
 		</div>
 	)
 }

@@ -1,17 +1,21 @@
-import { redirect } from "next/navigation"
-import * as R from "remeda"
 import { Text } from "@/components/Text"
 import { client } from "@/sanity/client"
+import { assertOnboarded } from "../assert-onboarded"
 import type { GroupExercise } from "./[slug]/groups/types"
 import { ExerciseCard } from "./ExerciseCard"
 
-const ExercisesPage = async (props: { params: { code: string } }) => {
+interface Props {
+	params: { code: string }
+}
+
+const ExercisesPage = async (props: Props) => {
 	const [participant, kickoff] = await Promise.all([
-		client.findParticipantOrThrow(),
+		client.findParticipantViaCookie(),
 		client.findKickoffOrThrow(props.params.code),
 	])
+	assertOnboarded(participant, kickoff)
 
-	if (!participant.onboarded) redirect(`/kickoff/${props.params.code}`)
+	const code = props.params.code
 
 	return (
 		<div>
@@ -19,40 +23,27 @@ const ExercisesPage = async (props: { params: { code: string } }) => {
 				Exercises
 			</Text>
 
-			<ul className="mt-6 grid gap-4">
+			<div className="mt-6 grid gap-4">
 				{kickoff.exercises?.map((exercise: GroupExercise) => {
 					const groups = exercise.groups ?? []
+					const slug = exercise.slug.current
 
-					const groupSlug = R.pipe(
-						R.entries(exercise.answers?.groups ?? {}),
-						R.find(
-							([_gSlug, group]) =>
-								group[participant._id] === "captain" ||
-								group[participant._id] === "contributor",
-						),
-						(result) => result?.[0],
-					)
+					const baseHref = `/kickoff/${code}/exercises/${slug}`
+					const groupsHref = `${baseHref}/groups`
+
+					const href = groups.length > 0 ? groupsHref : baseHref
 
 					return (
-						<li key={exercise._id}>
-							<ExerciseCard
-								kickoffCode={kickoff.code.current}
-								name={exercise.name}
-								slug={exercise.slug.current}
-								type={exercise.type}
-								groups={groups.length > 0}
-								groupSlug={groupSlug}
-							/>
-						</li>
+						<ExerciseCard key={exercise._id} name={exercise.name} href={href} />
 					)
 				})}
-			</ul>
+			</div>
 		</div>
 	)
 }
 
 export const metadata = {
-	title: "Exercises - W|W Workshop",
+	title: "Exercises - UnWorkshop",
 }
 
 export default ExercisesPage

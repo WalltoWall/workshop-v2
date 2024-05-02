@@ -1,15 +1,6 @@
-import dynamic from "next/dynamic"
 import { notFound } from "next/navigation"
 import { client } from "@/sanity/client"
-import { BrainstormExercise } from "../../_BrainstormExercise/BrainstormExercise"
-import { QuadrantsExercise } from "../../_QuadrantsExercise/QuadrantsExercise"
-import { SlidersExercise } from "../../_SlidersExercise/SlidersExercise"
-import { FormExercise } from "../../FormsExercise"
-
-const GroupExerciseSubmissionForm = dynamic(
-	() => import("../GroupExerciseSubmissionForm"),
-	{ ssr: false },
-)
+import { GroupExerciseSubmissionForm } from "../GroupExerciseSubmissionForm"
 
 type Props = {
 	params: { code: string; slug: string; groupSlug: string }
@@ -24,7 +15,7 @@ const GroupExercisePage = async (props: Props) => {
 
 	return (
 		<GroupExerciseSubmissionForm exercise={exercise} participant={participant}>
-			{exercise.type === "brainstorm" && (
+			{/* {exercise.type === "brainstorm" && (
 				<BrainstormExercise
 					exercise={exercise}
 					kickoffCode={props.params.code}
@@ -50,7 +41,7 @@ const GroupExercisePage = async (props: Props) => {
 
 			{exercise.type === "form" && (
 				<FormExercise exercise={exercise} groupSlug={props.params.groupSlug} />
-			)}
+			) }*/}
 		</GroupExerciseSubmissionForm>
 	)
 }

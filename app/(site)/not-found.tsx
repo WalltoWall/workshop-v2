@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/Button"
-import { DarkLayout } from "@/components/DarkLayout"
 import { Text } from "@/components/Text"
+import { DarkLayout } from "./DarkLayout"
 
 const NotFound = () => {
 	const router = useRouter()

@@ -1,5 +1,5 @@
 import "./globals.css"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import Local from "next/font/local"
 import { cx } from "class-variance-authority"
 import { Toaster } from "sonner"
@@ -34,23 +34,17 @@ type RootLayoutProps = {
 
 const RootLayout = ({ children }: RootLayoutProps) => {
 	return (
-		<html lang="en" className="h-full">
+		<html
+			lang="en"
+			className={cx(
+				FontSans.variable,
+				FontHeading.variable,
+				FontSerif.variable,
+			)}
+		>
 			<head />
-
-			<body
-				className={cx(
-					"h-full font-normal antialiased leading-copy font-sans",
-					FontSans.variable,
-					FontHeading.variable,
-					FontSerif.variable,
-				)}
-			>
-				<div
-					vaul-drawer-wrapper=""
-					className="flex min-h-svh flex-col bg-white"
-				>
-					{children}
-				</div>
+			<body className="font-normal antialiased leading-copy font-sans">
+				<div vaul-drawer-wrapper="">{children}</div>
 
 				<Toaster richColors />
 			</body>
@@ -61,7 +55,12 @@ const RootLayout = ({ children }: RootLayoutProps) => {
 export const metadata: Metadata = {
 	title: "UnWorkshop",
 	description: "Look in. Stand out.",
-	openGraph: { url: new URL(env.NEXT_PUBLIC_ROOT_URL) },
+	metadataBase: new URL("https://unworkshop.walltowall.com"),
+}
+
+export const viewport: Viewport = {
+	colorScheme: "dark",
+	themeColor: "#000",
 }
 
 export default RootLayout

@@ -27,6 +27,7 @@ export const GroupSelector = ({ groups }: Props) => {
 						<Text size={32} style="heading">
 							{group.name}
 						</Text>
+
 						<Arrow className="w-5 rotate-180" />
 					</Link>
 				))}

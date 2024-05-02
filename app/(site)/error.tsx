@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/Button"
 import { Text } from "@/components/Text"
-import { DarkLayout } from "@/components/DarkLayout"
+import { DarkLayout } from "./DarkLayout"
 
 const Error = (props: { error: Error; reset: () => void }) => {
 	return (

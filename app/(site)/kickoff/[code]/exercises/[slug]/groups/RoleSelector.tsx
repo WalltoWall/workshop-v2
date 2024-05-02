@@ -11,7 +11,6 @@ import { InstructionsModal } from "../InstructionsModal"
 import { useGroupParams } from "./hooks"
 import { RoleCard } from "./RoleCard"
 import type { GroupExercise, Role } from "./types"
-import { useMultiplayerGroups } from "./use-multiplayer-groups"
 
 interface Props {
 	participant: ST.Participant
@@ -21,10 +20,6 @@ interface Props {
 export const RoleSelector = ({ participant, exercise }: Props) => {
 	const params = useGroupParams()
 	const router = useRouter()
-	const { actions } = useMultiplayerGroups({
-		exerciseId: exercise._id,
-		participantId: participant._id,
-	})
 
 	const group = exercise.groups?.find(
 		(g) => g.slug.current === params.groupSlug,
@@ -32,7 +27,7 @@ export const RoleSelector = ({ participant, exercise }: Props) => {
 	const groupsHref = `/kickoff/${params.code}/exercises/${params.slug}/groups`
 
 	function onRoleCardClick(role: Role) {
-		actions.setRole({ role, slug: params.groupSlug })
+		// actions.setRole({ role, slug: params.groupSlug })
 		router.push(`${groupsHref}/${params.groupSlug}`)
 	}
 

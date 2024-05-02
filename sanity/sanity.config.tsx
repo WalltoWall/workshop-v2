@@ -8,8 +8,8 @@ import { env } from "@/env"
 
 const config = defineConfig({
 	name: "default",
-	title: "W|W Workshop",
-	subtitle: "Welcome back to the ShopShop CMS.",
+	title: "UnWorkshop",
+	subtitle: "Welcome back to the UnWorkshop CMS.",
 	basePath: "/admin",
 
 	document: { comments: { enabled: false } },

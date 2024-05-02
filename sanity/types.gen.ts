@@ -547,7 +547,7 @@ export type KickoffQueryResult = {
 } | null
 
 // Variable: participantQuery
-// Query: *[_type == "participant" && _id == $id][0]
+// Query: *[_type == "participant" && _id == $id][0] {			...,			kickoff->		}
 export type ParticipantQueryResult = {
 	_id: string
 	_type: "participant"
@@ -557,26 +557,21 @@ export type ParticipantQueryResult = {
 	name: string
 	recovery_code?: string
 	kickoff: {
-		_ref: string
-		_type: "reference"
-		_weak?: boolean
-		[internalGroqTypeReferenceTo]?: "kickoff"
-	}
-	onboarded: boolean
-} | null
-
-// Variable: participantWithKickoffCodeQuery
-// Query: *[_type == "participant" && _id == $id][0] {            ...,            kickoff->{ "code": code.current }        }
-export type ParticipantWithKickoffCodeQueryResult = {
-	_id: string
-	_type: "participant"
-	_createdAt: string
-	_updatedAt: string
-	_rev: string
-	name: string
-	recovery_code?: string
-	kickoff: {
-		code: string
+		_id: string
+		_type: "kickoff"
+		_createdAt: string
+		_updatedAt: string
+		_rev: string
+		title: string
+		code: Slug
+		greeting: string
+		exercises?: Array<{
+			_ref: string
+			_type: "reference"
+			_weak?: boolean
+			_key: string
+			[internalGroqTypeReferenceTo]?: "exercise"
+		}>
 	}
 	onboarded: boolean
 } | null

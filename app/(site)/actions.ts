@@ -9,29 +9,26 @@ const CodeSchema = z
 	.length(7, "Code must be 7 characters in length.")
 	.transform((val) => {
 		const code = val.toLowerCase()
+
 		return code.slice(0, 3) + "-" + code.slice(3)
 	})
-	.refine(
-		async (val) => {
-			const kickoff = await client.findKickoff(val)
-
-			return Boolean(kickoff)
-		},
-		{ message: "Kickoff does not exist." },
-	)
 
 export async function checkCodeAction(
 	_prevState: { error: string },
 	data: FormData,
 ) {
-	"use server"
-
-	const result = await CodeSchema.safeParseAsync(data.get("code"))
-
+	const result = CodeSchema.safeParse(data.get("code"))
 	if (!result.success) {
 		const msg = result.error.format()._errors.join(";")
 
 		return { error: msg }
+	}
+
+	const code = result.data
+	const kickoff = await client.findKickoff(code)
+
+	if (!kickoff) {
+		return { error: "Kickoff does not exist." }
 	}
 
 	redirect(`/kickoff/${result.data}`)

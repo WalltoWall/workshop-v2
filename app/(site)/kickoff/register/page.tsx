@@ -1,12 +1,9 @@
-import type { Metadata, Viewport } from "next"
-import { unstable_noStore as noStore } from "next/cache"
+import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import Image from "next/image"
 import { notFound, redirect } from "next/navigation"
 import { uid } from "uid"
-import { z } from "zod"
 import { zfd } from "zod-form-data"
-import { LightLayout } from "@/components/LightLayout"
 import { Logo } from "@/components/Logo"
 import { Text } from "@/components/Text"
 import { client } from "@/sanity/client"
@@ -14,30 +11,31 @@ import registerIllustration from "@/assets/images/register-illustration.jpg"
 import { PARTICIPANT_COOKIE } from "@/constants"
 import { RegisterInput } from "./RegisterInput"
 
-type Props = {
-	params: { code: string }
+const RegisterSchema = zfd.formData({ name: zfd.text() })
+
+interface Props {
 	searchParams: { [key: string]: string | string[] | undefined }
 }
 
-const Form = zfd.formData({ name: zfd.text() })
-
 const KickoffRegisterPage = async (props: Props) => {
-	const code = z.string().parse(props.searchParams.code)
+	const code = props.searchParams.code
+	if (typeof code !== "string") notFound()
+
 	const [kickoff, participant] = await Promise.all([
 		client.findKickoff(code),
 		client.findParticipantViaCookie(),
 	])
 
-	if (!kickoff) notFound()
-	if (participant && participant.onboarded && participant.kickoff.code === code)
-		redirect(`/kickoff/${code}/exercises`)
+	const isRegisteredAndOnboarded =
+		participant?.kickoff.code.current === code && participant?.onboarded
 
-	async function register(data: FormData) {
+	if (!kickoff) notFound()
+	if (isRegisteredAndOnboarded) redirect(`/kickoff/${code}/exercises`)
+
+	async function registerAction(data: FormData) {
 		"use server"
 
-		noStore()
-
-		const form = Form.parse(data)
+		const form = RegisterSchema.parse(data)
 		const participant = await client.registerParticipant({
 			name: form.name,
 			kickoffId: kickoff!._id,
@@ -55,8 +53,8 @@ const KickoffRegisterPage = async (props: Props) => {
 	}
 
 	return (
-		<LightLayout withHeaderBackButton mainClassName="justify-between">
-			<div className="space-y-3">
+		<div className="flex grow flex-col justify-between">
+			<div className="flex flex-col gap-3">
 				<Text style="heading" size={64} className="!normal-case">
 					{kickoff.greeting}
 				</Text>
@@ -87,7 +85,7 @@ const KickoffRegisterPage = async (props: Props) => {
 			/>
 
 			<form
-				action={register}
+				action={registerAction}
 				className="mt-8 flex flex-col items-center text-center"
 			>
 				<Text style="heading" size={24} asChild className="text-green-40">
@@ -100,17 +98,12 @@ const KickoffRegisterPage = async (props: Props) => {
 					Don't worry, your answers will be anonymous.
 				</Text>
 			</form>
-		</LightLayout>
+		</div>
 	)
 }
 
 export const metadata: Metadata = {
 	title: "Register - UnWorkshop",
-}
-
-export const viewport: Viewport = {
-	colorScheme: "light",
-	themeColor: "#fff",
 }
 
 export default KickoffRegisterPage

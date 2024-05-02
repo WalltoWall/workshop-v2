@@ -1,24 +1,25 @@
 "use client"
 
+import { useParams } from "next/navigation"
 import { Drawer } from "vaul"
 import { Button } from "@/components/Button"
 import { BlackXIcon } from "@/components/icons/BlackXIcon"
 import { Text } from "@/components/Text"
+import { clearParticipantAction } from "./clear-participant-action"
 
 interface ParticipantModalProps {
 	participantName: string
 	heading: string
 	message: string
-	code: string
-	onConfirmAction: () => void
 }
 
 export const ParticipantModal = ({
 	participantName,
 	heading,
 	message,
-	onConfirmAction,
 }: ParticipantModalProps) => {
+	const params = useParams()
+
 	return (
 		<Drawer.Root shouldScaleBackground>
 			<Text style="copy" size={16} className="ml-4 mr-auto">
@@ -39,20 +40,24 @@ export const ParticipantModal = ({
 						</Drawer.Title>
 
 						<Drawer.Close>
+							<span className="sr-only">Close</span>
 							<BlackXIcon className="w-8" />
 						</Drawer.Close>
 					</div>
 
-					<form className="flex flex-col" action={onConfirmAction}>
-						<Text
-							style="copy"
-							size={14}
-							className="mt-5 max-w-[260px] text-gray-50"
-						>
+					<form
+						className="flex flex-col gap-8"
+						action={() => {
+							if (typeof params.code !== "string") return
+
+							clearParticipantAction(params.code)
+						}}
+					>
+						<Text style="copy" className="mr-8 text-gray-50">
 							{message}
 						</Text>
 
-						<Button className="mt-8">Confirm</Button>
+						<Button>Confirm</Button>
 					</form>
 				</Drawer.Content>
 			</Drawer.Portal>

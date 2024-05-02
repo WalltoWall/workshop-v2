@@ -3,17 +3,11 @@ import Link from "next/link"
 import { cx } from "class-variance-authority"
 import { Arrow } from "@/components/icons/Arrow"
 import { Text } from "@/components/Text"
-import type * as ST from "@/sanity/types.gen"
 import { CardVariantSequence } from "./card-variants"
 
 interface Props {
-	kickoffCode: string | undefined
-	slug: string | undefined
 	name: string
-	type: ST.Exercise["type"]
-	groups?: boolean
-	groupSlug?: string
-	presenter?: boolean
+	href: string
 }
 
 const sequence = new CardVariantSequence([
@@ -23,16 +17,8 @@ const sequence = new CardVariantSequence([
 	"brainstorm",
 ])
 
-export const ExerciseCard = (props: Props) => {
+export const ExerciseCard = ({ name, href }: Props) => {
 	const variant = sequence.nextVariant()
-
-	let href = `/kickoff/${props.kickoffCode}/exercises/${props.slug}`
-
-	if (props.presenter) {
-		href = `/presenter/${props.kickoffCode}/${props.slug}`
-	} else if (props.groups) {
-		href = `/kickoff/${props.kickoffCode}/exercises/${props.slug}/groups${props.groupSlug ? `/${props.groupSlug}` : ""}`
-	}
 
 	return (
 		<Link
@@ -45,7 +31,7 @@ export const ExerciseCard = (props: Props) => {
 		>
 			<div className="self-end pb-4 pl-3">
 				<Text style="heading" size={24}>
-					{props.name}
+					{name}
 				</Text>
 
 				<div className="mt-2 flex items-center gap-1">

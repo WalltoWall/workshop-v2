@@ -3,7 +3,6 @@ import React from "react"
 import { groq } from "next-sanity"
 import { cookies } from "next/headers"
 import type { Reference } from "sanity"
-import { z } from "zod"
 import type * as ST from "@/sanity/types.gen"
 import { PARTICIPANT_COOKIE } from "@/constants"
 import { sanity } from "./sanity-client"
@@ -24,31 +23,14 @@ export const client = {
 		return data
 	}),
 
-	findParticipant: React.cache(
-		async <T extends ST.Participant = ST.Participant>(id: string) => {
-			const participantQuery = groq`*[_type == "participant" && _id == $id][0]`
+	findParticipant: React.cache(async (id: string) => {
+		const participantQuery = groq`*[_type == "participant" && _id == $id][0] {
+			...,
+			kickoff->
+		}`
 
-			const data = await sanity.fetch<T | null>(
-				participantQuery,
-				{ id },
-				{ cache: "no-store" },
-			)
-
-			return data
-		},
-	),
-
-	findParticipantViaCookie: React.cache(async () => {
-		const id = cookies().get(PARTICIPANT_COOKIE)?.value
-		if (!id) return null
-
-		const participantWithKickoffCodeQuery = groq`*[_type == "participant" && _id == $id][0] {
-            ...,
-            kickoff->{ "code": code.current }
-        }`
-
-		const data = await sanity.fetch<ST.ParticipantWithKickoffCodeQueryResult>(
-			participantWithKickoffCodeQuery,
+		const data = await sanity.fetch<ST.ParticipantQueryResult>(
+			participantQuery,
 			{ id },
 			{ cache: "no-store" },
 		)
@@ -56,34 +38,34 @@ export const client = {
 		return data
 	}),
 
-	findParticipantOrThrow: React.cache(async <
-		T extends ST.Participant = ST.Participant,
-	>() => {
-		const participantId = z
-			.string()
-			.parse(cookies().get(PARTICIPANT_COOKIE)?.value)
+	findParticipantViaCookie: React.cache(async () => {
+		const id = cookies().get(PARTICIPANT_COOKIE)?.value
+		if (!id) return null
 
-		const participant = await client.findParticipant<T>(participantId)
-		if (!participant) throw new Error("No onboarded participant found.")
+		return client.findParticipant(id)
+	}),
+
+	findParticipantOrThrow: React.cache(async () => {
+		const participant = await client.findParticipantViaCookie()
+		if (!participant) throw new Error("No participant found.")
 
 		return participant
 	}),
 
-	// prettier-ignore
-	async findAllParticipantsInExercise<T extends ST.Participant = ST.Participant>(exerciseId: string) {
-        const participants = await sanity.fetch<Array<T>>(
-            groq`*[_type == "participant" && answers[$exerciseId] != null]{
+	findAllParticipantsInExercise: React.cache(async (exerciseId: string) => {
+		const participants = await sanity.fetch<ST.Participant[]>(
+			groq`*[_type == "participant" && answers[$exerciseId] != null]{
                 ...,
                 answers
             }`,
-            {exerciseId},
-            { cache: "no-store" }
-        )
+			{ exerciseId },
+			{ cache: "no-store" },
+		)
 
-        return participants
-    },
+		return participants
+	}),
 
-	async findAllParticipantsInKickoff(kickoffId: string) {
+	findAllParticipantsInKickoff: React.cache(async (kickoffId: string) => {
 		const participantsInKickoffQuery = groq`*[_type == "participant" && kickoff._ref == $kickoffId]`
 
 		const participants =
@@ -94,14 +76,14 @@ export const client = {
 			)
 
 		return participants
-	},
+	}),
 
-	async findKickoffOrThrow(code: string) {
+	findKickoffOrThrow: React.cache(async (code: string) => {
 		const kickoff = await client.findKickoff(code)
 		if (!kickoff) throw new Error("Kickoff not found, when expected.")
 
 		return kickoff
-	},
+	}),
 
 	async registerParticipant(args: {
 		name: string
@@ -141,13 +123,11 @@ export const client = {
 			onboarded: true,
 		}
 
-		const res: ST.Participant = await sanity.patch(id).set(data).commit()
-
-		return res
+		await sanity.patch(id).set(data).commit()
 	},
 
-	async findExerciseBySlug<T extends ST.Exercise = ST.Exercise>(slug: string) {
-		const data = await sanity.fetch<T | null>(
+	findExerciseBySlug: React.cache(async (slug: string) => {
+		const data = await sanity.fetch<ST.Exercise | null>(
 			groq`*[_type == "exercise" && slug.current == $slug][0]{
                     ...,
                 }`,
@@ -156,5 +136,5 @@ export const client = {
 		)
 
 		return data
-	},
+	}),
 }

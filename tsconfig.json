@@ -8,7 +8,7 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"strictNullChecks": true,
-		"noUncheckedIndexedAccess": false,
+		"noUncheckedIndexedAccess": true,
 		"forceConsistentCasingInFileNames": true,
 		"verbatimModuleSyntax": true,
 		"noFallthroughCasesInSwitch": true,

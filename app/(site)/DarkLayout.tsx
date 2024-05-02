@@ -9,7 +9,7 @@ export const DarkLayout = (props: { children: React.ReactNode }) => {
 		>
 			<div className="mx-auto flex max-w-md flex-col justify-between">
 				<Link href="/">
-					<Logo className="relative -right-20 -top-10 ml-auto w-[325px]" />
+					<Logo className="relative -right-20 -top-10 ml-auto w-[20.3125rem]" />
 				</Link>
 
 				{props.children}
