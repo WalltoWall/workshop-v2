@@ -5,11 +5,6 @@ import { cx } from "class-variance-authority"
 import { Toaster } from "sonner"
 import { env } from "@/env"
 
-// This is required to change the type of `useSnapshot` from Readonly<T> -> <T>.
-declare module "valtio" {
-	function useSnapshot<T extends object>(p: T): T
-}
-
 const FontSans = Local({
 	src: "../../assets/fonts/regular.woff2",
 	display: "swap",
