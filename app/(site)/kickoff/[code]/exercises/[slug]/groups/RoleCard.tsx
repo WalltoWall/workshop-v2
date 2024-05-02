@@ -1,10 +1,10 @@
 import Image, { type StaticImageData } from "next/image"
 import { cx } from "class-variance-authority"
 import { Text } from "@/components/Text"
-import type { Role } from "./types"
+import type { Role } from "@/party"
 
 interface Props {
-	role: Exclude<Role, "unset">
+	role: Role
 	onClick: (role: Role) => void
 	className?: string
 	name: string
@@ -28,7 +28,7 @@ export const RoleCard = ({
 			)}
 			onClick={() => onClick(role)}
 		>
-			<Image src={img} alt="" className="absolute right-2 top-2" />
+			<Image src={img} alt="" className="absolute right-2 top-2" priority />
 
 			<Text
 				asChild

@@ -1,6 +1,6 @@
 import { Text } from "@/components/Text"
+import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
-import { assertOnboarded } from "../assert-onboarded"
 import type { GroupExercise } from "./[slug]/groups/types"
 import { ExerciseCard } from "./ExerciseCard"
 

@@ -9,7 +9,7 @@ import { InvalidField } from "./InvalidField"
 
 interface Props {
 	exercise: ST.Exercise
-	participant: ST.Participant
+	participant: NonNullable<ST.ParticipantQueryResult>
 	groupSlug?: string
 }
 

@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation"
+import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
 import { FormExercise } from "./FormsExercise"
 import { InstructionsModal } from "./InstructionsModal"
@@ -8,14 +9,19 @@ interface Props {
 }
 
 const ExercisePage = async (props: Props) => {
-	const participant = await client.findParticipantOrThrow()
-	const exercise = await client.findExerciseBySlug(props.params.slug)
-	if (!exercise) notFound()
+	const [participant, kickoff, exercise] = await Promise.all([
+		client.findParticipantViaCookie(),
+		client.findKickoffOrThrow(props.params.code),
+		client.findExerciseBySlug(props.params.slug),
+	])
+	assertOnboarded(participant, kickoff)
 
-	if (exercise.groups && exercise.groups.length >= 1) {
-		redirect(
-			`/kickoff/${props.params.code}/exercises/${props.params.slug}/groups`,
-		)
+	const code = props.params.code
+	const slug = props.params.slug
+
+	if (!exercise) notFound()
+	if (exercise.groups && exercise.groups.length > 0) {
+		redirect(`/kickoff/${code}/exercises/${slug}/groups`)
 	}
 
 	return (

@@ -1,18 +1,20 @@
-import dynamic from "next/dynamic"
 import { notFound } from "next/navigation"
+import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
+import { RoleSelector } from "../../RoleSelector"
 
-const RoleSelector = dynamic(() => import("../../RoleSelector"), { ssr: false })
-
-type Props = {
+interface Props {
 	params: { code: string; slug: string; groupSlug: string }
 }
 
 const GroupExerciseRoleSelectionPage = async (props: Props) => {
-	const [exercise, participant] = await Promise.all([
+	const [participant, kickoff, exercise] = await Promise.all([
+		client.findParticipantViaCookie(),
+		client.findKickoffOrThrow(props.params.code),
 		client.findExerciseBySlug(props.params.slug),
-		client.findParticipantOrThrow(),
 	])
+	assertOnboarded(participant, kickoff)
+
 	if (!exercise) notFound()
 
 	return <RoleSelector exercise={exercise} participant={participant} />

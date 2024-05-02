@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
 import { InstructionsModal } from "../InstructionsModal"
 import { GroupSelector } from "./GroupSelector"
@@ -8,7 +9,13 @@ interface Props {
 }
 
 const GroupsPage = async (props: Props) => {
-	const exercise = await client.findExerciseBySlug(props.params.slug)
+	const [participant, kickoff, exercise] = await Promise.all([
+		client.findParticipantViaCookie(),
+		client.findKickoffOrThrow(props.params.code),
+		client.findExerciseBySlug(props.params.slug),
+	])
+	assertOnboarded(participant, kickoff)
+
 	if (!exercise) notFound()
 
 	const groups = exercise.groups ?? []

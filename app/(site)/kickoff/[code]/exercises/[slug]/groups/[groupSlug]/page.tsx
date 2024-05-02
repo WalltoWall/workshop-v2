@@ -1,48 +1,49 @@
 import { notFound } from "next/navigation"
+import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
-import { GroupExerciseSubmissionForm } from "../GroupExerciseSubmissionForm"
+import { FormExercise } from "../../FormsExercise"
+import { InstructionsModal } from "../../InstructionsModal"
+import { RoleHeader } from "../../RoleHeader"
 
-type Props = {
+interface Props {
 	params: { code: string; slug: string; groupSlug: string }
 }
 
 const GroupExercisePage = async (props: Props) => {
-	const [exercise, participant] = await Promise.all([
+	const [participant, kickoff, exercise] = await Promise.all([
+		client.findParticipantViaCookie(),
+		client.findKickoffOrThrow(props.params.code),
 		client.findExerciseBySlug(props.params.slug),
-		client.findParticipantOrThrow(),
 	])
+	assertOnboarded(participant, kickoff)
 	if (!exercise) notFound()
 
+	const group = exercise.groups?.find(
+		(g) => g.slug.current === props.params.groupSlug,
+	)
+	if (!group) return null
+
 	return (
-		<GroupExerciseSubmissionForm exercise={exercise} participant={participant}>
-			{/* {exercise.type === "brainstorm" && (
-				<BrainstormExercise
-					exercise={exercise}
-					kickoffCode={props.params.code}
-					groupSlug={props.params.groupSlug}
-				/>
-			)}
+		<div className="flex flex-[1_1_0] flex-col">
+			<RoleHeader
+				className="-mx-7 mb-7"
+				participantId={participant._id}
+				groupName={group.name}
+			/>
 
-			{exercise.type === "sliders" && (
-				<SlidersExercise
+			<InstructionsModal
+				exerciseName={exercise.name}
+				instructions={exercise.instructions}
+			/>
+
+			{/* exercise.type === "form" && (
+				<FormExercise
 					exercise={exercise}
 					groupSlug={props.params.groupSlug}
+					participant={participant}
 				/>
-			)}
-
-			{exercise.type === "quadrants" && (
-				<QuadrantsExercise
-					exercise={exercise}
-					kickoffCode={props.params.code}
-					groupSlug={props.params.groupSlug}
-					keepStepperActive
-				/>
-			)}
-
-			{exercise.type === "form" && (
-				<FormExercise exercise={exercise} groupSlug={props.params.groupSlug} />
-			) }*/}
-		</GroupExerciseSubmissionForm>
+			)*/}
+		</div>
 	)
 }
 
