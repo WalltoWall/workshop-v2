@@ -1,5 +1,6 @@
 import React from "react"
 import { notFound } from "next/navigation"
+import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
 import { GroupProvider } from "@/groups/group-context"
 
@@ -9,11 +10,20 @@ interface Props {
 }
 
 const ExerciseLayout = async ({ params, children }: Props) => {
-	const exercise = await client.findExerciseBySlug(params.slug)
+	const [participant, kickoff, exercise] = await Promise.all([
+		client.findParticipantViaCookie(),
+		client.findKickoffOrThrow(params.code),
+		client.findExerciseBySlug(params.slug),
+	])
+	assertOnboarded(participant, kickoff)
 	if (!exercise) notFound()
 
 	return (
-		<GroupProvider slug={params.slug} type={exercise.type}>
+		<GroupProvider
+			slug={params.slug}
+			type={exercise.type}
+			participantId={participant._id}
+		>
 			{children}
 		</GroupProvider>
 	)

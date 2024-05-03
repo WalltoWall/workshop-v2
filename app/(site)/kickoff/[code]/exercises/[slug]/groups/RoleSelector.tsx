@@ -8,17 +8,16 @@ import type * as ST from "@/sanity/types.gen"
 import captainIllustration from "@/assets/images/captain-illustration.png"
 import contibutorIllustration from "@/assets/images/contributerImage.png"
 import { useGroupContext } from "@/groups/group-context"
-import type { Role } from "@/party"
+import type { GroupRole } from "@/groups/messages"
 import { InstructionsModal } from "../InstructionsModal"
 import { useGroupParams } from "./hooks"
 import { RoleCard } from "./RoleCard"
 
 interface Props {
-	participant: NonNullable<ST.ParticipantQueryResult>
 	exercise: ST.Exercise
 }
 
-export const RoleSelector = ({ participant, exercise }: Props) => {
+export const RoleSelector = ({ exercise }: Props) => {
 	const params = useGroupParams()
 	const router = useRouter()
 	const { actions } = useGroupContext()
@@ -28,8 +27,8 @@ export const RoleSelector = ({ participant, exercise }: Props) => {
 	)
 	const href = `/kickoff/${params.code}/exercises/${params.slug}/groups`
 
-	function onRoleCardClick(role: Role) {
-		actions.send({ type: "set-role", role, id: participant._id })
+	function onRoleCardClick(role: GroupRole) {
+		actions.send({ type: "set-role", role })
 		router.push(`${href}/${params.groupSlug}`)
 	}
 

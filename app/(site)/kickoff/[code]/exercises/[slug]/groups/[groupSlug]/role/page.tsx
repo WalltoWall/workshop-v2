@@ -17,7 +17,7 @@ const GroupExerciseRoleSelectionPage = async (props: Props) => {
 
 	if (!exercise) notFound()
 
-	return <RoleSelector exercise={exercise} participant={participant} />
+	return <RoleSelector exercise={exercise} />
 }
 
 export default GroupExerciseRoleSelectionPage

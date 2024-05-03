@@ -12,15 +12,9 @@ import type {
 	PartyOutgoingMessage,
 } from "@/party"
 
-function createActions(ws: PartySocket) {
-	const actions = {
-		send: (message: PartyIncomingMessage) => ws.send(JSON.stringify(message)),
-	}
-
-	return actions
+interface Actions {
+	send: (message: PartyIncomingMessage) => void
 }
-
-type Actions = ReturnType<typeof createActions>
 
 export interface GroupContextValue {
 	ws: PartySocket
@@ -35,9 +29,15 @@ interface Props {
 	children: React.ReactNode
 	slug: string
 	type: ST.Exercise["type"]
+	participantId: string
 }
 
-export const GroupProvider = ({ slug, type, children }: Props) => {
+export const GroupProvider = ({
+	slug,
+	type,
+	children,
+	participantId,
+}: Props) => {
 	const [connected, setConnected] = React.useState(false)
 	const [answer, setAnswer] = React.useState<Answer>({ type: "unknown" })
 	const [participants, setParticipants] = React.useState<Participants>({})
@@ -45,6 +45,7 @@ export const GroupProvider = ({ slug, type, children }: Props) => {
 	const ws = usePartySocket({
 		host: env.NEXT_PUBLIC_PARTYKIT_HOST,
 		room: `${slug}::${type}`,
+		id: participantId,
 
 		onOpen: () => setConnected(true),
 		onClose: () => setConnected(false),
@@ -57,11 +58,11 @@ export const GroupProvider = ({ slug, type, children }: Props) => {
 					setParticipants(msg.participants)
 					break
 
-				case "participant-update":
+				case "participants":
 					setParticipants(msg.participants)
 					break
 
-				case "answer-update":
+				case "answer":
 					setAnswer(msg.answer)
 					break
 
@@ -70,13 +71,18 @@ export const GroupProvider = ({ slug, type, children }: Props) => {
 			}
 		},
 	})
-
-	const value: GroupContextValue = React.useMemo(
-		() => ({ ws, answer, participants, actions: createActions(ws) }),
-		[ws, answer, participants],
+	const actions = React.useMemo(
+		() => ({
+			send: (message: PartyIncomingMessage) => ws.send(JSON.stringify(message)),
+		}),
+		[ws],
 	)
 
-	// TODO: Loading Indicator
+	const value: GroupContextValue = React.useMemo(
+		() => ({ ws, answer, participants, actions }),
+		[ws, answer, participants, actions],
+	)
+
 	if (!connected || answer.type === "unknown") return null
 
 	return <GroupContext.Provider value={value}>{children}</GroupContext.Provider>

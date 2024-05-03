@@ -1,6 +1,7 @@
 "use client"
 
 import { UndoIcon } from "lucide-react"
+import React from "react"
 import { useRouter } from "next/navigation"
 import { cx } from "class-variance-authority"
 import { PencilCircle } from "@/components/icons/PencilCircle"
@@ -23,13 +24,19 @@ export const RoleHeader = ({
 	const { actions, participants } = useGroupContext()
 	const router = useRouter()
 
-	const role = participants[participantId] ?? "contributor"
+	const role = participants[participantId]
+
+	const goToRoleSelector = React.useCallback(
+		() =>
+			router.push(
+				`/kickoff/${params.code}/exercises/${params.slug}/groups/${params.groupSlug}/role`,
+			),
+		[params.code, params.slug, params.groupSlug, router],
+	)
 
 	const onClick = () => {
-		actions.send({ type: "clear-role", id: participantId })
-		router.push(
-			`/kickoff/${params.code}/exercises/${params.slug}/groups/${params.groupSlug}/role`,
-		)
+		actions.send({ type: "clear-role" })
+		goToRoleSelector()
 	}
 
 	return (
@@ -41,15 +48,15 @@ export const RoleHeader = ({
 		>
 			<PencilCircle className="mr-1 w-5" />
 			<Text size={16}>
-				{role === "contributor" ? (
-					<>
-						You are a <strong>contributor</strong> of{" "}
-						<strong>{groupName}</strong>.
-					</>
-				) : (
+				{role === "captain" ? (
 					<>
 						You are the <strong>captain</strong> of <strong>{groupName}</strong>
 						.
+					</>
+				) : (
+					<>
+						You are a <strong>contributor</strong> of{" "}
+						<strong>{groupName}</strong>.
 					</>
 				)}
 			</Text>

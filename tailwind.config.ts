@@ -5,9 +5,11 @@ import plugin from "tailwindcss/plugin"
 
 export default {
 	content: [
-		"./pages/**/*.{js,ts,jsx,tsx}",
-		"./components/**/*.{js,ts,jsx,tsx}",
-		"./app/**/*.{js,ts,jsx,tsx}",
+		"./app/**/*.{ts,tsx}",
+		"./components/**/*.{ts,tsx}",
+		"./groups/**/*.{ts,tsx}",
+		"./lib/**/*.{ts,tsx}",
+		"./exercises/**/*.{ts,tsx}",
 	],
 	theme: {
 		fontFamily: {
