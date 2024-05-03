@@ -1,5 +1,9 @@
 import type * as Party from "partykit/server"
 import { z } from "zod"
+import type { BrainstormAnswer } from "@/exercises/brainstorm/types"
+import type { FormAnswer } from "@/exercises/form/types"
+import type { QuadrantsAnswer } from "@/exercises/quadrants/types"
+import type { SliderAnswer } from "@/exercises/sliders/types"
 import {
 	ClearRoleMessage,
 	SetRoleMessage,
@@ -14,10 +18,6 @@ const TypeSchema = z.union([
 	z.literal("sliders"),
 ])
 
-export type FormAnswer = { type: "form" }
-export type BrainstormAnswer = { type: "brainstorm" }
-export type QuadrantsAnswer = { type: "quadrants" }
-export type SliderAnswer = { type: "sliders" }
 export type Answer =
 	| FormAnswer
 	| BrainstormAnswer
