@@ -69,6 +69,8 @@ export const Kickoff = defineType({
 					to: [{ type: "exercise" as const }],
 				}),
 			],
+			initialValue: [],
+			validation: (Rule) => Rule.required(),
 		}),
 	],
 })

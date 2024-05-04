@@ -1,11 +1,11 @@
 import React from "react"
 import clsx from "clsx"
+import type { FieldProps, FormFieldAnswer } from "../types"
+import { getBadWords, getTaglineVariant, sanitizeString } from "../utils"
 import { AddButton } from "./AddButton"
 import { HighlightedResponses } from "./HighlightedResponses"
 import { Prompt } from "./Prompt"
 import { Textarea, textareaStyles } from "./Textarea"
-import type { FieldProps, FormFieldAnswer } from "./types"
-import { getBadWords, getTaglineVariant, sanitizeString } from "./utils"
 
 const INPUT_NAME = "answer"
 

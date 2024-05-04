@@ -7,7 +7,7 @@ import { cx } from "class-variance-authority"
 import { PencilCircle } from "@/components/icons/PencilCircle"
 import { Text } from "@/components/Text"
 import { useGroupContext } from "@/groups/group-context"
-import { useGroupParams } from "./groups/hooks"
+import { useGroupParams } from "../hooks"
 
 interface RoleHeaderProps {
 	className?: string

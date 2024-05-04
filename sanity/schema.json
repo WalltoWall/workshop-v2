@@ -2102,7 +2102,7 @@
             }
           }
         },
-        "optional": true
+        "optional": false
       }
     }
   },

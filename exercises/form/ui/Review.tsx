@@ -1,19 +1,17 @@
 import { Text } from "@/components/Text"
 import type * as ST from "@/sanity/types.gen"
+import type { FormStepAnswer } from "@/exercises/form/types"
 import { FieldContainer } from "./FieldContainer"
 import { FieldRenderer } from "./FieldRenderer"
 import { Prompt } from "./Prompt"
-import type { FormStepAnswer } from "./types"
-import type { FormActions } from "./use-multiplayer-form"
 
-type Props = {
+interface Props {
 	allAnswers?: FormStepAnswer[]
-	actions: FormActions
 	exercise: ST.Exercise
 }
 
-export const Review = ({ allAnswers = [], exercise, actions }: Props) => {
-	const steps = exercise.form!.steps ?? []
+export const Review = ({ allAnswers = [], exercise }: Props) => {
+	const steps = exercise.form?.steps ?? []
 
 	return (
 		<div>
@@ -48,7 +46,6 @@ export const Review = ({ allAnswers = [], exercise, actions }: Props) => {
 								allAnswers={allAnswers}
 								answer={fieldAnswer}
 								readOnly
-								actions={actions}
 							/>
 						</FieldContainer>
 					)

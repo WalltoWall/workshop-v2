@@ -2,16 +2,17 @@ import React from "react"
 import * as R from "remeda"
 import { match } from "ts-pattern"
 import { Text } from "@/components/Text"
-import { AddButton } from "./AddButton"
-import { useRememberCursorPosition } from "./hooks"
+import { useGroupContext } from "@/groups/group-context"
+import { useRememberCursorPosition } from "../hooks"
 import type {
 	FieldProps,
 	FormField,
 	FormStep,
 	FormStepAnswer,
 	ListFieldAnswer,
-} from "./types"
-import { PositiveNumber, StringArray } from "./validators"
+} from "../types"
+import { PositiveNumber, StringArray } from "../validators"
+import { AddButton } from "./AddButton"
 
 const DEFAULT_INPUT_NAME = "answer"
 
@@ -113,7 +114,7 @@ type Props = FieldProps<{
 	allSteps?: FormStep[]
 }>
 
-const SourceListField = ({ answer, actions, ...props }: Props) => {
+const SourceListField = ({ answer, ...props }: Props) => {
 	if (answer && answer.type !== "List") {
 		throw new Error("Invalid answer data found.")
 	}
@@ -154,13 +155,8 @@ const SourceListField = ({ answer, actions, ...props }: Props) => {
 		})
 	}
 
-	const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
-		e.preventDefault()
-		submitForm()
-	}
-
 	return (
-		<form ref={rForm} className="space-y-6" onSubmit={handleSubmit}>
+		<div className="flex flex-col gap-6">
 			{labels.map((label, idx) => {
 				const sectionAnswer = answer?.groups.find((a) => a.label === label)
 
@@ -198,16 +194,16 @@ const SourceListField = ({ answer, actions, ...props }: Props) => {
 					/>
 				)
 			})}
-		</form>
+		</div>
 	)
 }
 
-const PlainListField = ({ answer, actions, ...props }: Props) => {
+const PlainListField = ({ answer, ...props }: Props) => {
 	if (answer && answer.type !== "List") {
 		throw new Error("Invalid answer data found.")
 	}
 
-	const rForm = React.useRef<React.ElementRef<"form">>(null)
+	const { actions } = useGroupContext()
 
 	const {
 		rows: initialRows = 5,
@@ -220,44 +216,37 @@ const PlainListField = ({ answer, actions, ...props }: Props) => {
 	const answerCount = resolvedAnswer?.responses.length ?? 0
 	const rows = Math.max(answerCount, initialRows)
 
-	const submitForm = () => {
-		if (!rForm.current || props.readOnly) return
+	const submitAnswer = (value: string, idx: number) => {
+		if (props.readOnly) return
 
-		const data = new FormData(rForm.current)
-		const answers = StringArray.parse(data.getAll(DEFAULT_INPUT_NAME))
-
-		actions.submitFieldAnswer({
-			answer: { type: "List", groups: [{ responses: answers }] },
-			fieldIdx: props.fieldIdx,
+		actions.send({
+			type: "change-list-field-item",
 			stepIdx: props.stepIdx,
+			fieldIdx: props.fieldIdx,
+			groupIdx: 0,
+			responseIdx: idx,
+			value,
 		})
 	}
 
-	const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
-		e.preventDefault()
-		submitForm()
-	}
-
 	const appendNewRow = () => {
-		const answers = StringArray.parse(resolvedAnswer?.responses)
-
-		actions.submitFieldAnswer({
-			answer: { type: "List", groups: [{ responses: [...answers, ""] }] },
+		actions.send({
+			type: "add-list-field-item",
 			fieldIdx: props.fieldIdx,
 			stepIdx: props.stepIdx,
 		})
 	}
 
 	return (
-		<form onSubmit={handleSubmit} ref={rForm}>
+		<div>
 			<ul className="flex flex-col gap-2">
 				{R.range(0, rows).map((idx) => (
 					<Input
 						key={idx}
 						number={idx + 1}
 						placeholder={placeholder}
-						value={resolvedAnswer?.responses.at(idx)}
-						onChange={submitForm}
+						value={resolvedAnswer?.responses.at(idx) ?? ""}
+						onChange={(e) => submitAnswer(e.target.value, idx)}
 						readOnly={props.readOnly}
 					/>
 				))}
@@ -270,7 +259,7 @@ const PlainListField = ({ answer, actions, ...props }: Props) => {
 			)}
 
 			<input type="submit" className="hidden" />
-		</form>
+		</div>
 	)
 }
 

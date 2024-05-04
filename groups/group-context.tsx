@@ -3,6 +3,7 @@
 import usePartySocket from "partysocket/react"
 import React from "react"
 import type PartySocket from "partysocket"
+import { toast } from "sonner"
 import type * as ST from "@/sanity/types.gen"
 import { env } from "@/env"
 import type {
@@ -11,6 +12,7 @@ import type {
 	PartyIncomingMessage,
 	PartyOutgoingMessage,
 } from "@/party"
+import type { GroupRole } from "./messages"
 
 interface Actions {
 	send: (message: PartyIncomingMessage) => void
@@ -21,6 +23,7 @@ export interface GroupContextValue {
 	answer: Answer
 	actions: Actions
 	participants: Participants
+	role?: GroupRole
 }
 
 const GroupContext = React.createContext<GroupContextValue>(undefined!)
@@ -66,6 +69,10 @@ export const GroupProvider = ({
 					setAnswer(msg.answer)
 					break
 
+				case "error":
+					toast.error(msg.error)
+					break
+
 				default:
 					break
 			}
@@ -79,8 +86,14 @@ export const GroupProvider = ({
 	)
 
 	const value: GroupContextValue = React.useMemo(
-		() => ({ ws, answer, participants, actions }),
-		[ws, answer, participants, actions],
+		() => ({
+			ws,
+			answer,
+			participants,
+			actions,
+			role: participants[participantId],
+		}),
+		[ws, answer, participants, actions, participantId],
 	)
 
 	if (!connected || answer.type === "unknown") return null

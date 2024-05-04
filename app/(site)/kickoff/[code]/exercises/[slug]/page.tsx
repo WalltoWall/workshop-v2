@@ -1,8 +1,8 @@
 import { notFound, redirect } from "next/navigation"
+import { InstructionsModal } from "@/components/InstructionsModal"
 import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
-import { FormExercise } from "./FormsExercise"
-import { InstructionsModal } from "./InstructionsModal"
+import { FormExercise } from "@/exercises/form/ui"
 
 interface Props {
 	params: { code: string; slug: string }

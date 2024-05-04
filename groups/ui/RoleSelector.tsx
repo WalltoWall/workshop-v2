@@ -3,14 +3,14 @@
 import React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { InstructionsModal } from "@/components/InstructionsModal"
 import { Text } from "@/components/Text"
 import type * as ST from "@/sanity/types.gen"
 import captainIllustration from "@/assets/images/captain-illustration.png"
 import contibutorIllustration from "@/assets/images/contributerImage.png"
 import { useGroupContext } from "@/groups/group-context"
 import type { GroupRole } from "@/groups/messages"
-import { InstructionsModal } from "../InstructionsModal"
-import { useGroupParams } from "./hooks"
+import { useGroupParams } from "../hooks"
 import { RoleCard } from "./RoleCard"
 
 interface Props {

@@ -1,7 +1,6 @@
 import { Text } from "@/components/Text"
 import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
-import type { GroupExercise } from "./[slug]/groups/types"
 import { ExerciseCard } from "./ExerciseCard"
 
 interface Props {
@@ -24,7 +23,7 @@ const ExercisesPage = async (props: Props) => {
 			</Text>
 
 			<div className="mt-6 grid gap-4">
-				{kickoff.exercises?.map((exercise: GroupExercise) => {
+				{kickoff.exercises?.map((exercise) => {
 					const groups = exercise.groups ?? []
 					const slug = exercise.slug.current
 

@@ -7,5 +7,4 @@ export const SetRoleMessage = z.object({
 	type: z.literal("set-role"),
 	role: GroupRole,
 })
-
 export const ClearRoleMessage = z.object({ type: z.literal("clear-role") })

@@ -1,17 +1,16 @@
 import { unreachable } from "@/lib/unreachable"
 import type * as ST from "@/sanity/types.gen"
-import { ListField } from "./ListField"
-import { NarrowField } from "./NarrowField"
-import { TaglineField } from "./TaglineField"
-import { TextField } from "./TextField"
 import type {
 	FormField,
 	FormFieldAnswer,
 	FormStepAnswer,
 	SharedFieldProps,
-} from "./types"
-import type { FormActions } from "./use-multiplayer-form"
-import { PositiveNumber } from "./validators"
+} from "../types"
+import { PositiveNumber } from "../validators"
+import { ListField } from "./ListField"
+import { NarrowField } from "./NarrowField"
+import { TaglineField } from "./TaglineField"
+import { TextField } from "./TextField"
 
 type Props = {
 	field: FormField
@@ -21,7 +20,6 @@ type Props = {
 	fieldIdx: number
 	allAnswers?: FormStepAnswer[]
 	readOnly?: boolean
-	actions: FormActions
 }
 
 export const FieldRenderer = ({
@@ -32,7 +30,6 @@ export const FieldRenderer = ({
 	fieldIdx,
 	allAnswers,
 	readOnly = false,
-	actions,
 }: Props) => {
 	const sharedProps: SharedFieldProps = {
 		exerciseId: exercise._id,
@@ -41,7 +38,6 @@ export const FieldRenderer = ({
 		answer,
 		field,
 		readOnly,
-		actions,
 	}
 
 	function getFieldSource() {

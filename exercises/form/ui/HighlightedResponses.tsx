@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import { Text, type TextVariants } from "@/components/Text"
-import { sanitizeString } from "./utils"
+import { sanitizeString } from "../utils"
 
 interface Props {
 	responses: string[]

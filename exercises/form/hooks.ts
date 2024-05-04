@@ -7,7 +7,7 @@ interface Args {
 
 /**
  * Helper hook to maintain the cursor position in a text input after an
- * asynchronous DOM update. This is useful since `yjs` + `partykity` pretty
+ * asynchronous DOM update. This is useful since `partykit` pretty
  * much makes every DOM text input update asynchronous.
  *
  * @see https://github.com/facebook/react/issues/5386

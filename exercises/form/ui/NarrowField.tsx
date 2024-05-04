@@ -3,8 +3,8 @@ import React from "react"
 import { toast } from "sonner"
 import { Text } from "@/components/Text"
 import { pluralize } from "@/lib/pluralize"
-import type { FieldProps, FormFieldAnswer } from "./types"
-import { StringArray } from "./validators"
+import type { FieldProps, FormFieldAnswer } from "../types"
+import { StringArray } from "../validators"
 
 const INPUT_NAME = "answer"
 
@@ -12,7 +12,7 @@ type Props = FieldProps<{
 	source: FormFieldAnswer
 }>
 
-export const NarrowField = ({ source, answer, actions, ...props }: Props) => {
+export const NarrowField = ({ source, answer, ...props }: Props) => {
 	if (source.type !== "List") {
 		throw new Error(
 			"Narrow fields only support List field answers as a source.",

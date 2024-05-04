@@ -1,13 +1,13 @@
 import React from "react"
 import { match } from "ts-pattern"
+import type { FieldProps } from "../types"
 import { Textarea } from "./Textarea"
-import type { FieldProps } from "./types"
 
 type Props = FieldProps
 
 const DEFAULT_INPUT_NAME = "answer"
 
-export const TextField = ({ answer, actions, ...props }: Props) => {
+export const TextField = ({ answer, ...props }: Props) => {
 	if (answer && answer.type !== "Text") {
 		throw new Error("Invalid answer data found.")
 	}

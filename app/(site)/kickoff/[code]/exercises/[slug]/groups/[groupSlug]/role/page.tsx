@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
-import { RoleSelector } from "../../RoleSelector"
+import { RoleSelector } from "@/groups/ui/RoleSelector"
 
 interface Props {
 	params: { code: string; slug: string; groupSlug: string }

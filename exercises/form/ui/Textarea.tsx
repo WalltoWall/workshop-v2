@@ -1,5 +1,5 @@
 import clsx from "clsx"
-import { useRememberCursorPosition } from "./hooks"
+import { useRememberCursorPosition } from "../hooks"
 
 export const textareaStyles =
 	"min-h-32 w-full rounded-lg border border-gray-90 px-4 py-2.5 text-16 leading-copyMega"

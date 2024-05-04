@@ -329,7 +329,7 @@ export type Kickoff = {
 	title: string
 	code: Slug
 	greeting: string
-	exercises?: Array<{
+	exercises: Array<{
 		_ref: string
 		_type: "reference"
 		_weak?: boolean
@@ -543,7 +543,7 @@ export type KickoffQueryResult = {
 				_key: string
 			}>
 		}
-	}> | null
+	}>
 } | null
 
 // Variable: participantQuery
@@ -565,7 +565,7 @@ export type ParticipantQueryResult = {
 		title: string
 		code: Slug
 		greeting: string
-		exercises?: Array<{
+		exercises: Array<{
 			_ref: string
 			_type: "reference"
 			_weak?: boolean
