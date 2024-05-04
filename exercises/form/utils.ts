@@ -10,7 +10,7 @@ const CLEAN_REGEX = /[^a-zA-Z ]/g
 export function sanitizeString(str: string | undefined | null): string {
 	if (!str) return ""
 
-	return str.replace(CLEAN_REGEX, "").toLowerCase()
+	return str.replace(CLEAN_REGEX, "").toLowerCase().trim()
 }
 
 /**

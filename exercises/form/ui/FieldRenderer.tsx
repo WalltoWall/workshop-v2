@@ -1,45 +1,15 @@
 import { unreachable } from "@/lib/unreachable"
-import type * as ST from "@/sanity/types.gen"
-import type {
-	FormField,
-	FormFieldAnswer,
-	FormStepAnswer,
-	SharedFieldProps,
-} from "../types"
 import { PositiveNumber } from "../validators"
+import { useFieldContext } from "./FieldContext"
 import { ListField } from "./ListField"
 import { NarrowField } from "./NarrowField"
 import { TaglineField } from "./TaglineField"
 import { TextField } from "./TextField"
 
-type Props = {
-	field: FormField
-	answer?: FormFieldAnswer
-	exercise: ST.Exercise
-	stepIdx: number
-	fieldIdx: number
-	allAnswers?: FormStepAnswer[]
-	readOnly?: boolean
-}
+export const FieldRenderer = () => {
+	const { field, allAnswers } = useFieldContext()
 
-export const FieldRenderer = ({
-	field,
-	answer,
-	exercise,
-	stepIdx,
-	fieldIdx,
-	allAnswers,
-	readOnly = false,
-}: Props) => {
-	const sharedProps: SharedFieldProps = {
-		exerciseId: exercise._id,
-		fieldIdx,
-		stepIdx,
-		answer,
-		field,
-		readOnly,
-	}
-
+	// TODO: Maybe this should exist on context?
 	function getFieldSource() {
 		const stepSrc = PositiveNumber.parse(field.source?.step)
 		const fieldSrc = PositiveNumber.parse(field.source?.field)
@@ -55,37 +25,18 @@ export const FieldRenderer = ({
 
 	switch (field.type) {
 		case "List": {
-			return (
-				<ListField
-					key={field.prompt}
-					allAnswers={allAnswers}
-					allSteps={exercise.form?.steps}
-					{...sharedProps}
-				/>
-			)
+			return <ListField key={field.prompt} />
 		}
 
 		case "Narrow":
-			return (
-				<NarrowField
-					key={field.prompt}
-					source={getFieldSource()}
-					{...sharedProps}
-				/>
-			)
+			return <NarrowField key={field.prompt} source={getFieldSource()} />
 
 		case "Text":
 		case "Big Text":
-			return <TextField key={field.prompt} {...sharedProps} />
+			return <TextField key={field.prompt} />
 
 		case "Tagline":
-			return (
-				<TaglineField
-					key={field.prompt}
-					source={getFieldSource()}
-					{...sharedProps}
-				/>
-			)
+			return <TaglineField key={field.prompt} source={getFieldSource()} />
 
 		default:
 			return unreachable(field.type)

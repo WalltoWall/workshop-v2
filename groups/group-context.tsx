@@ -11,7 +11,7 @@ import type {
 	Participants,
 	PartyIncomingMessage,
 	PartyOutgoingMessage,
-} from "@/party"
+} from "@/party/types"
 import type { GroupRole } from "./messages"
 
 interface Actions {

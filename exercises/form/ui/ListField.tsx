@@ -4,15 +4,10 @@ import { match } from "ts-pattern"
 import { Text } from "@/components/Text"
 import { useGroupContext } from "@/groups/group-context"
 import { useRememberCursorPosition } from "../hooks"
-import type {
-	FieldProps,
-	FormField,
-	FormStep,
-	FormStepAnswer,
-	ListFieldAnswer,
-} from "../types"
-import { PositiveNumber, StringArray } from "../validators"
+import type { ListFieldAnswer } from "../types"
+import { PositiveNumber } from "../validators"
 import { AddButton } from "./AddButton"
+import { useFieldContext } from "./FieldContext"
 
 const DEFAULT_INPUT_NAME = "answer"
 
@@ -60,30 +55,64 @@ const Input = ({
 	)
 }
 
-type SourceListSectionProps = {
+interface SourceListSectionProps {
 	label: string
-	field: FormField
-	answer?: ListFieldAnswer["groups"][number]
-	onInputChange?: React.ChangeEventHandler<HTMLInputElement>
-	readOnly?: boolean
-	appendNewRow?: () => void
+	groupIdx: number
+	groupAnswer?: ListFieldAnswer["groups"][number]
 }
 
-const SourceListSection = (props: SourceListSectionProps) => {
+const SourceListSection = ({
+	label,
+	groupIdx,
+	groupAnswer,
+}: SourceListSectionProps) => {
+	const { field, answer, readOnly, stepIdx, fieldIdx } = useFieldContext()
+	if (answer && answer.type !== "List") {
+		throw new Error("Invalid answer data found.")
+	}
+
 	const {
 		rows: initialRows = 5,
 		showAddButton = false,
 		placeholder,
 		addButtonText = "Add another",
-	} = props.field
+	} = field
 
-	const answerCount = props.answer?.responses.length ?? 0
+	const answerCount = groupAnswer?.responses.length ?? 0
 	const rows = Math.max(answerCount, initialRows)
+
+	const { actions } = useGroupContext()
+
+	const submitAnswer = (value: string, responseIdx: number) => {
+		if (readOnly) return
+
+		actions.send({
+			type: "change-list-field-item",
+			label,
+			value,
+			stepIdx,
+			fieldIdx,
+			responseIdx,
+			groupIdx,
+		})
+	}
+
+	const appendNewRow = () => {
+		if (readOnly) return
+
+		actions.send({
+			type: "add-list-field-item",
+			label,
+			groupIdx,
+			fieldIdx,
+			stepIdx,
+		})
+	}
 
 	return (
 		<div>
 			<Text style="heading" size={24} className="uppercase">
-				{props.label}
+				{label}
 			</Text>
 
 			<ul className="mt-4 flex flex-col gap-2">
@@ -92,16 +121,16 @@ const SourceListSection = (props: SourceListSectionProps) => {
 						key={idx}
 						number={idx + 1}
 						placeholder={placeholder}
-						value={props.answer?.responses.at(idx)}
-						name={props.label}
-						onChange={props.onInputChange}
-						readOnly={props.readOnly}
+						value={groupAnswer?.responses.at(idx) ?? ""}
+						name={label}
+						onChange={(e) => submitAnswer(e.target.value, idx)}
+						readOnly={readOnly}
 					/>
 				))}
 			</ul>
 
 			{showAddButton && (
-				<AddButton className="mt-2.5" onClick={props.appendNewRow}>
+				<AddButton className="mt-2.5" onClick={appendNewRow}>
 					{addButtonText}
 				</AddButton>
 			)}
@@ -109,23 +138,17 @@ const SourceListSection = (props: SourceListSectionProps) => {
 	)
 }
 
-type Props = FieldProps<{
-	allAnswers?: FormStepAnswer[]
-	allSteps?: FormStep[]
-}>
-
-const SourceListField = ({ answer, ...props }: Props) => {
+const SourceListField = () => {
+	const { answer, allSteps, allAnswers, field } = useFieldContext()
 	if (answer && answer.type !== "List") {
 		throw new Error("Invalid answer data found.")
 	}
 
-	const rForm = React.useRef<HTMLFormElement>(null)
+	const stepSrc = PositiveNumber.parse(field.source?.step)
+	const fieldSrc = PositiveNumber.parse(field.source?.field)
 
-	const stepSrc = PositiveNumber.parse(props.field.source?.step)
-	const fieldSrc = PositiveNumber.parse(props.field.source?.field)
-
-	const sourceAnswer = props.allAnswers?.at(stepSrc - 1)?.at(fieldSrc - 1)
-	const sourceField = props.allSteps?.at(stepSrc - 1)?.fields?.at(fieldSrc - 1)
+	const sourceAnswer = allAnswers?.at(stepSrc - 1)?.at(fieldSrc - 1)
+	const sourceField = allSteps?.at(stepSrc - 1)?.fields?.at(fieldSrc - 1)
 
 	if (!sourceAnswer || !sourceField) {
 		throw new Error("No valid source found. Check field or step config.")
@@ -137,92 +160,47 @@ const SourceListField = ({ answer, ...props }: Props) => {
 			throw new Error("Invalid source answer.")
 		})
 
-	const submitForm = () => {
-		if (!rForm.current || props.readOnly) return
-
-		const data = new FormData(rForm.current)
-
-		actions.submitFieldAnswer({
-			answer: {
-				type: "List",
-				groups: labels.map((label) => ({
-					label,
-					responses: StringArray.parse(data.getAll(label)),
-				})),
-			},
-			fieldIdx: props.fieldIdx,
-			stepIdx: props.stepIdx,
-		})
-	}
-
 	return (
 		<div className="flex flex-col gap-6">
-			{labels.map((label, idx) => {
-				const sectionAnswer = answer?.groups.find((a) => a.label === label)
-
-				const appendNewRow = () => {
-					if (!rForm.current || props.readOnly) return
-
-					const data = new FormData(rForm.current)
-					const sectionResponses = sectionAnswer?.responses ?? []
-
-					const groups = labels.map((label) => ({
-						label,
-						responses: StringArray.parse(data.getAll(label)),
-					}))
-					groups.splice(idx, 0, { responses: [...sectionResponses, ""], label })
-
-					actions.submitFieldAnswer({
-						answer: {
-							type: "List",
-							groups,
-						},
-						fieldIdx: props.fieldIdx,
-						stepIdx: props.stepIdx,
-					})
-				}
-
-				return (
-					<SourceListSection
-						key={label}
-						label={label}
-						field={props.field}
-						answer={sectionAnswer}
-						onInputChange={submitForm}
-						readOnly={props.readOnly}
-						appendNewRow={appendNewRow}
-					/>
-				)
-			})}
+			{labels.map((label, idx) => (
+				<SourceListSection
+					key={label}
+					label={label}
+					groupAnswer={answer?.groups.find((a) => a.label === label)}
+					groupIdx={idx}
+				/>
+			))}
 		</div>
 	)
 }
 
-const PlainListField = ({ answer, ...props }: Props) => {
+const PlainListField = () => {
+	const { answer } = useFieldContext()
 	if (answer && answer.type !== "List") {
 		throw new Error("Invalid answer data found.")
 	}
 
 	const { actions } = useGroupContext()
+	const { field, stepIdx, fieldIdx, readOnly } = useFieldContext()
 
 	const {
 		rows: initialRows = 5,
 		showAddButton = false,
 		placeholder,
 		addButtonText = "Add another",
-	} = props.field
+	} = field
 
 	const resolvedAnswer = answer?.groups.at(0)
 	const answerCount = resolvedAnswer?.responses.length ?? 0
 	const rows = Math.max(answerCount, initialRows)
 
 	const submitAnswer = (value: string, idx: number) => {
-		if (props.readOnly) return
+		if (readOnly) return
 
 		actions.send({
 			type: "change-list-field-item",
-			stepIdx: props.stepIdx,
-			fieldIdx: props.fieldIdx,
+			stepIdx,
+			fieldIdx,
 			groupIdx: 0,
 			responseIdx: idx,
 			value,
@@ -230,10 +208,13 @@ const PlainListField = ({ answer, ...props }: Props) => {
 	}
 
 	const appendNewRow = () => {
+		if (readOnly) return
+
 		actions.send({
 			type: "add-list-field-item",
-			fieldIdx: props.fieldIdx,
-			stepIdx: props.stepIdx,
+			fieldIdx,
+			stepIdx,
+			groupIdx: 0,
 		})
 	}
 
@@ -247,12 +228,12 @@ const PlainListField = ({ answer, ...props }: Props) => {
 						placeholder={placeholder}
 						value={resolvedAnswer?.responses.at(idx) ?? ""}
 						onChange={(e) => submitAnswer(e.target.value, idx)}
-						readOnly={props.readOnly}
+						readOnly={readOnly}
 					/>
 				))}
 			</ul>
 
-			{showAddButton && !props.readOnly && (
+			{showAddButton && !readOnly && (
 				<AddButton onClick={appendNewRow} className="mt-2.5">
 					{addButtonText}
 				</AddButton>
@@ -263,10 +244,12 @@ const PlainListField = ({ answer, ...props }: Props) => {
 	)
 }
 
-export const ListField = (props: Props) => {
-	return props.field.source?.field && props.field.source.step ? (
-		<SourceListField {...props} />
-	) : (
-		<PlainListField {...props} />
-	)
+export const ListField = () => {
+	const { field } = useFieldContext()
+
+	if (field.source?.field && field.source.step) {
+		return <SourceListField />
+	}
+
+	return <PlainListField />
 }

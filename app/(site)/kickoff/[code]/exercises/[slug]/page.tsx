@@ -25,7 +25,7 @@ const ExercisePage = async (props: Props) => {
 	}
 
 	return (
-		<div className="flex flex-[1_1_0] flex-col">
+		<div className="flex flex-[1_1_0] flex-col gap-3">
 			<InstructionsModal
 				exerciseName={exercise.name}
 				instructions={exercise.instructions}

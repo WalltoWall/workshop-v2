@@ -43,13 +43,6 @@ export type FormFieldAnswer =
 
 export type FormStepAnswer = Array<FormFieldAnswer>
 
-export type SharedFieldProps = {
-	answer?: FormFieldAnswer
-	exerciseId: string
-	stepIdx: number
-	fieldIdx: number
-	field: FormField
-	readOnly: boolean
-}
+export type SharedFieldProps = {}
 
 export type FieldProps<T = unknown> = T & SharedFieldProps

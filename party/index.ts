@@ -1,64 +1,17 @@
 import type * as Party from "partykit/server"
 import { debounce } from "perfect-debounce"
-import { z } from "zod"
-import type { BrainstormAnswer } from "@/exercises/brainstorm/types"
+import { ChangeListFieldItemMessage } from "@/exercises/form/messages"
 import {
-	AddListFieldItemMessage,
-	ChangeListFieldItemMessage,
-} from "@/exercises/form/messages"
-import type { FormAnswer } from "@/exercises/form/types"
-import type { QuadrantsAnswer } from "@/exercises/quadrants/types"
-import type { SliderAnswer } from "@/exercises/sliders/types"
-import {
-	ClearRoleMessage,
-	SetRoleMessage,
-	type GroupRole,
-} from "@/groups/messages"
-import { json } from "./party-utils"
+	ExerciseType,
+	PartyIncomingMessage,
+	type Answer,
+	type Participants,
+	type PartyOutgoingMessage,
+} from "./types"
+import { json } from "./utils"
 
 const ANSWER_KEY = "answer"
 const PARTICIPANTS_KEY = "participants"
-
-const TypeSchema = z.union([
-	z.literal("form"),
-	z.literal("brainstorm"),
-	z.literal("quadrants"),
-	z.literal("sliders"),
-])
-
-export type Answer =
-	| FormAnswer
-	| BrainstormAnswer
-	| QuadrantsAnswer
-	| SliderAnswer
-	| { type: "unknown" }
-
-const PartyIncomingMessage = z.discriminatedUnion("type", [
-	// Group Messages
-	SetRoleMessage,
-	ClearRoleMessage,
-
-	// Form Messages
-	ChangeListFieldItemMessage,
-	AddListFieldItemMessage,
-])
-export type PartyIncomingMessage = z.infer<typeof PartyIncomingMessage>
-
-type InitMessage = { type: "init"; answer: Answer; participants: Participants }
-type ParticipantsOutgoingMessage = {
-	type: "participants"
-	participants: Participants
-}
-type AnswerOutgoingMessage = { type: "answer"; answer: Answer }
-type ErrorOutgoingMessage = { type: "error"; error: string }
-
-export type PartyOutgoingMessage =
-	| InitMessage
-	| ParticipantsOutgoingMessage
-	| AnswerOutgoingMessage
-	| ErrorOutgoingMessage
-
-export type Participants = Record<string, GroupRole>
 
 export default class UnworkshopServer implements Party.Server {
 	// The recorded answers for the exercise.
@@ -72,7 +25,7 @@ export default class UnworkshopServer implements Party.Server {
 	get type() {
 		const [, type] = this.room.id.split("::")
 
-		return TypeSchema.parse(type)
+		return ExerciseType.parse(type)
 	}
 
 	/**
