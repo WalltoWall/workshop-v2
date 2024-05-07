@@ -29,10 +29,12 @@ export const PartyIncomingMessage = z.discriminatedUnion("type", [
 	FormMessages.ChangeListFieldItem,
 	FormMessages.AddListFieldItem,
 
-	FormMessages.AddNarrowFieldItem,
+	FormMessages.SetNarrowFieldItem,
 
 	FormMessages.AddTaglineFieldItem,
 	FormMessages.ChangeTaglineFieldItem,
+
+	FormMessages.ChangeTextField,
 ])
 export type PartyIncomingMessage = z.infer<typeof PartyIncomingMessage>
 

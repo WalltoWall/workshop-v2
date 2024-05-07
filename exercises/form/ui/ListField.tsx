@@ -175,7 +175,7 @@ const PlainListField = () => {
 	const { answer } = useFieldContext()
 	assertListAnswer(answer)
 
-	const { actions } = useGroupContext()
+	const { actions, id } = useGroupContext()
 	const { field, stepIdx, fieldIdx, readOnly } = useFieldContext()
 
 	const {
@@ -194,6 +194,7 @@ const PlainListField = () => {
 
 		actions.send({
 			type: "change-list-field-item",
+			id,
 			stepIdx,
 			fieldIdx,
 			groupIdx: 0,
@@ -207,6 +208,7 @@ const PlainListField = () => {
 
 		actions.send({
 			type: "add-list-field-item",
+			id,
 			fieldIdx,
 			stepIdx,
 			groupIdx: 0,
@@ -229,7 +231,11 @@ const PlainListField = () => {
 			</ul>
 
 			{showAddButton && !readOnly && (
-				<AddButton onClick={appendNewRow} className="mt-2.5">
+				<AddButton
+					onClick={appendNewRow}
+					className="mt-2.5"
+					disabled={answerCount < initialRows}
+				>
 					{addButtonText}
 				</AddButton>
 			)}

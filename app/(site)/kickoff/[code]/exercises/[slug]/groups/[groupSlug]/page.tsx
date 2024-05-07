@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { InstructionsModal } from "@/components/InstructionsModal"
 import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
+import { FormExercise } from "@/exercises/form/ui"
 import { RoleHeader } from "@/groups/ui/RoleHeader"
 
 interface Props {
@@ -35,13 +36,13 @@ const GroupExercisePage = async (props: Props) => {
 				instructions={exercise.instructions}
 			/>
 
-			{/* exercise.type === "form" && (
+			{exercise.type === "form" && (
 				<FormExercise
 					exercise={exercise}
 					groupSlug={props.params.groupSlug}
 					participant={participant}
 				/>
-			)*/}
+			)}
 		</div>
 	)
 }

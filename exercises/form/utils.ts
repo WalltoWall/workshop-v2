@@ -5,6 +5,7 @@ import type {
 	ListFieldAnswer,
 	NarrowFieldAnswer,
 	TaglineFieldAnswer,
+	TextFieldAnswer,
 } from "./types"
 
 const CLEAN_REGEX = /[^a-zA-Z ]/g
@@ -81,6 +82,18 @@ export function assertTaglineAnswer(
 		throw new Error(stripIndent`
 			Invalid answer found for this field. 
 				Expected: "Tagline"
+				Received: "${answer.type}"
+		`)
+	}
+}
+
+export function assertTextAnswer(
+	answer: FormFieldAnswer | undefined,
+): asserts answer is TextFieldAnswer | undefined {
+	if (answer && answer.type !== "Text") {
+		throw new Error(stripIndent`
+			Invalid answer found for this field. 
+				Expected: "Text"
 				Received: "${answer.type}"
 		`)
 	}

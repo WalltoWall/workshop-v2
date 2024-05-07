@@ -2,8 +2,10 @@
 
 import usePartySocket from "partysocket/react"
 import React from "react"
+import { useParams } from "next/navigation"
 import type PartySocket from "partysocket"
 import { toast } from "sonner"
+import { z } from "zod"
 import type * as ST from "@/sanity/types.gen"
 import { env } from "@/env"
 import type {
@@ -24,6 +26,9 @@ export interface GroupContextValue {
 	actions: Actions
 	participants: Participants
 	role?: GroupRole
+
+	/** Participant or group ID */
+	id: string
 }
 
 const GroupContext = React.createContext<GroupContextValue>(undefined!)
@@ -44,6 +49,8 @@ export const GroupProvider = ({
 	const [connected, setConnected] = React.useState(false)
 	const [answer, setAnswer] = React.useState<Answer>({ type: "unknown" })
 	const [participants, setParticipants] = React.useState<Participants>({})
+	const params = useParams()
+	const groupSlug = z.string().optional().parse(params.groupSlug)
 
 	const ws = usePartySocket({
 		host: env.NEXT_PUBLIC_PARTYKIT_HOST,
@@ -92,8 +99,9 @@ export const GroupProvider = ({
 			participants,
 			actions,
 			role: participants[participantId],
+			id: groupSlug || participantId,
 		}),
-		[ws, answer, participants, actions, participantId],
+		[ws, answer, participants, actions, participantId, groupSlug],
 	)
 
 	if (!connected || answer.type === "unknown") return null

@@ -1,9 +1,12 @@
 import type * as Party from "partykit/server"
 import { debounce } from "perfect-debounce"
+import type { FormField } from "@/exercises/form/messages"
 import {
 	type FormFieldAnswer,
 	type ListFieldAnswer,
+	type NarrowFieldAnswer,
 	type TaglineFieldAnswer,
+	type TextFieldAnswer,
 } from "@/exercises/form/types"
 import {
 	ExerciseType,
@@ -79,7 +82,7 @@ export default class UnworkshopServer implements Party.Server {
 
 	getFormFieldAnswer<T extends FormFieldAnswer>(
 		conn: Party.Connection,
-		msg: { stepIdx: number; fieldIdx: number },
+		msg: FormField,
 		init: T,
 	) {
 		if (this.answer.type !== "form") {
@@ -87,8 +90,8 @@ export default class UnworkshopServer implements Party.Server {
 		}
 
 		// Initialize the list of step answers for this form exercise.
-		this.answer.data[conn.id] ??= []
-		const steps = this.answer.data[conn.id]!
+		this.answer.data[msg.id] ??= []
+		const steps = this.answer.data[msg.id]!
 
 		// Initialize the answer for this step.
 		steps[msg.stepIdx] ??= []
@@ -107,7 +110,7 @@ export default class UnworkshopServer implements Party.Server {
 
 	getListResponses(
 		conn: Party.Connection,
-		msg: { stepIdx: number; fieldIdx: number; label: string; groupIdx: number },
+		msg: FormField & { label?: string; groupIdx: number },
 	) {
 		const fieldAnswer = this.getFormFieldAnswer<ListFieldAnswer>(conn, msg, {
 			type: "List",
@@ -215,8 +218,44 @@ export default class UnworkshopServer implements Party.Server {
 				break
 			}
 
-			default:
+			case "change-text-field": {
+				const fieldAnswer = this.getFormFieldAnswer<TextFieldAnswer>(
+					conn,
+					msg,
+					{ type: "Text", response: "" },
+				)
+				fieldAnswer.response = msg.value
+
+				this.broadcastAnswers()
+
 				break
+			}
+
+			case "set-narrow-field-item": {
+				const fieldAnswer = this.getFormFieldAnswer<NarrowFieldAnswer>(
+					conn,
+					msg,
+					{ type: "Narrow", responses: [] },
+				)
+
+				// If this message already exists in the array, remove it.
+				if (fieldAnswer.responses.includes(msg.value)) {
+					fieldAnswer.responses = fieldAnswer.responses.filter(
+						(resp) => resp !== msg.value,
+					)
+				} else {
+					// Otherwise, add it to the list.
+					fieldAnswer.responses.push(msg.value)
+				}
+
+				this.broadcastAnswers()
+
+				break
+			}
+
+			default:
+				// @ts-expect-error - This should error if all cases are being handled.
+				this.sendAndThrow("Unimplemented message type: " + msg.type, conn)
 		}
 
 		// Save changes to storage every 5 seconds.

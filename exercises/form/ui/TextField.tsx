@@ -1,49 +1,47 @@
 import React from "react"
-import { match } from "ts-pattern"
-import type { FieldProps } from "../types"
+import { useGroupContext } from "@/groups/group-context"
+import { assertTextAnswer } from "../utils"
+import { useFieldContext } from "./FieldContext"
 import { Textarea } from "./Textarea"
-
-type Props = FieldProps
 
 const DEFAULT_INPUT_NAME = "answer"
 
-export const TextField = ({ answer, ...props }: Props) => {
-	if (answer && answer.type !== "Text") {
-		throw new Error("Invalid answer data found.")
-	}
+export const TextField = () => {
+	const { answer, stepIdx, fieldIdx, readOnly, field } = useFieldContext()
+	assertTextAnswer(answer)
 
-	const onChange = (
+	const { actions, id } = useGroupContext()
+
+	function onChange(
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-	) => {
-		actions.submitFieldAnswer({
-			answer: { type: "Text", response: e.target.value },
-			fieldIdx: props.fieldIdx,
-			stepIdx: props.stepIdx,
+	) {
+		actions.send({
+			type: "change-text-field",
+			id,
+			value: e.target.value,
+			fieldIdx,
+			stepIdx,
 		})
 	}
 
 	const sharedProps = {
 		name: DEFAULT_INPUT_NAME,
-		placeholder: props.field.placeholder,
+		placeholder: field.placeholder,
 		onChange,
 		value: answer?.response,
-		readOnly: props.readOnly,
+		readOnly: readOnly,
 	}
 
 	return (
 		<div>
-			{match(props.field.type)
-				.with("Text", () => (
-					<input
-						type="text"
-						className="h-9 w-full rounded-lg border border-gray-90 px-4 py-2.5 text-16 leading-copyMega"
-						{...sharedProps}
-					/>
-				))
-				.with("Big Text", () => <Textarea {...sharedProps} />)
-				.otherwise(() => {
-					throw new Error("Unreachable!")
-				})}
+			{field.type === "Text" && (
+				<input
+					type="text"
+					className="h-9 w-full rounded-lg border border-gray-90 px-4 py-2.5 text-16 leading-copyMega"
+					{...sharedProps}
+				/>
+			)}
+			{field.type === "Big Text" && <Textarea {...sharedProps} />}
 		</div>
 	)
 }

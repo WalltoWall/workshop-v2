@@ -12,7 +12,7 @@ const INPUT_NAME = "answer"
 export const NarrowField = () => {
 	const { getFieldSource, answer, field, readOnly, fieldIdx, stepIdx } =
 		useFieldContext()
-	const { actions } = useGroupContext()
+	const { actions, id } = useGroupContext()
 
 	const source = getFieldSource()
 
@@ -26,7 +26,9 @@ export const NarrowField = () => {
 	const handleChange: React.MouseEventHandler<HTMLInputElement> = (e) => {
 		if (readOnly) return
 
-		if (answers.length > max) {
+		// Prevent users from checking a response when they're already at the
+		// max.
+		if (answers.length >= max && e.currentTarget.checked) {
 			e.preventDefault()
 
 			const msg = pluralize`You can only select up to ${max} answer[|s].`
@@ -34,7 +36,8 @@ export const NarrowField = () => {
 		}
 
 		actions.send({
-			type: "add-narrow-field-item",
+			type: "set-narrow-field-item",
+			id,
 			value: e.currentTarget.value,
 			fieldIdx,
 			stepIdx,

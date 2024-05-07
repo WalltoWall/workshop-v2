@@ -63,7 +63,7 @@ const HighlighterTextarea = ({
 export const TaglineField = () => {
 	const { getFieldSource, answer, field, readOnly, fieldIdx, stepIdx } =
 		useFieldContext()
-	const { actions } = useGroupContext()
+	const { actions, id } = useGroupContext()
 
 	const source = getFieldSource()
 
@@ -77,6 +77,7 @@ export const TaglineField = () => {
 	const handleChange = (value: string, idx: number) => {
 		actions.send({
 			type: "change-tagline-field-item",
+			id,
 			value,
 			responseIdx: idx,
 			fieldIdx,
@@ -87,6 +88,7 @@ export const TaglineField = () => {
 	const addResponse = () => {
 		actions.send({
 			type: "add-tagline-field-item",
+			id,
 			stepIdx,
 			fieldIdx,
 		})
