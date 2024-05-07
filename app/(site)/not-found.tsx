@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/Button"
 import { Text } from "@/components/Text"
-import { DarkLayout } from "./DarkLayout"
+import { IntroLayout } from "./IntroLayout"
 
 const NotFound = () => {
 	const router = useRouter()
 
 	return (
-		<DarkLayout>
+		<IntroLayout.Dark>
 			<div className="my-auto space-y-4 px-7 pb-20">
 				<Text style="heading" size={40}>
 					Not Found
@@ -19,7 +19,7 @@ const NotFound = () => {
 					Go back
 				</Button>
 			</div>
-		</DarkLayout>
+		</IntroLayout.Dark>
 	)
 }
 

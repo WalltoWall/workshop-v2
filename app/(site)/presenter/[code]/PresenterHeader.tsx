@@ -2,32 +2,72 @@
 
 import React from "react"
 import Link from "next/link"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import {
+	useParams,
+	usePathname,
+	useRouter,
+	useSearchParams,
+} from "next/navigation"
 import { cx } from "class-variance-authority"
 import * as R from "remeda"
 import { match } from "ts-pattern"
+import { z } from "zod"
 import { Chevron } from "@/components/icons/Chevron"
 import { Hamburger } from "@/components/icons/Hamburger"
 import { Logo } from "@/components/Logo"
 import { Text } from "@/components/Text"
 import type * as ST from "@/sanity/types.gen"
-import { ExerciseWithStepsNav } from "./[code]/[slug]/_QuadrantsExercise/QuadrantsHeaderNav"
+
+interface StepNavigationProps {
+	steps: number
+	slug: string
+	step: number
+}
+
+const StepNavigation = ({ steps, slug, step }: StepNavigationProps) => {
+	const params = useParams()
+
+	return (
+		<ul className="mt-6 flex flex-col gap-3">
+			{R.range(0, steps).map((idx) => (
+				<li key={idx}>
+					<Link
+						href={{
+							href: `/presenter/${params.code}/${slug}`,
+							query: { step: idx + 1 },
+						}}
+						className={cx(
+							"mx-6 block uppercase transition-opacity text-24 leading-none font-heading capsize hover:opacity-100 focus:opacity-100",
+							idx + 1 === step ? "opacity-100" : "opacity-50",
+						)}
+					>
+						Step {idx + 1}
+					</Link>
+				</li>
+			))}
+		</ul>
+	)
+}
 
 interface PresenterHeaderProp {
 	kickoffCode?: string
-	exercises?: Array<ST.Exercise>
-	exercise?: ST.Exercise
+	exercises: Array<ST.Exercise>
 }
 
 export const PresenterHeader = ({
 	kickoffCode,
 	exercises,
-	exercise,
 }: PresenterHeaderProp) => {
 	const [isOpen, setIsOpen] = React.useState(false)
+
 	const router = useRouter()
 	const pathname = usePathname()
+	const params = useParams()
 	const searchParams = useSearchParams()
+
+	const exerciseSlug = z.string().optional().parse(params.slug)
+
+	const exercise = exercises.find((e) => e.slug.current === exerciseSlug)
 	const step = parseInt(searchParams?.get("step") ?? "1")
 
 	const steps = match(exercise?.type)
@@ -48,18 +88,16 @@ export const PresenterHeader = ({
 
 	return (
 		<header className="relative z-50 flex h-[5.5rem] items-center bg-black px-8 py-[1.125rem]">
-			<Link href="/presenter">
+			<Link href={`/presenter/${kickoffCode}`}>
 				<Logo className="h-[3.25rem] w-[3.25rem] text-white" />
 			</Link>
 
-			{exercise?.name && (
-				<Text
-					size={48}
-					className="ml-10 font-bold uppercase text-white font-heading"
-				>
-					{exercise.name}
-				</Text>
-			)}
+			<Text
+				size={48}
+				className="ml-10 font-bold uppercase text-white font-heading"
+			>
+				{exercise ? exercise.name : "Presenter"}
+			</Text>
 
 			{steps && (
 				<div className="relative mx-6">
@@ -105,15 +143,17 @@ export const PresenterHeader = ({
 
 										{match(e.type)
 											.with("quadrants", () => (
-												<ExerciseWithStepsNav
+												<StepNavigation
 													steps={e.quadrants?.length ?? 1}
 													slug={e.slug.current}
+													step={step}
 												/>
 											))
 											.with("brainstorm", () => (
-												<ExerciseWithStepsNav
+												<StepNavigation
 													steps={e.steps?.length ?? 1}
 													slug={e.slug.current}
+													step={step}
 												/>
 											))
 											.otherwise(() => null)}

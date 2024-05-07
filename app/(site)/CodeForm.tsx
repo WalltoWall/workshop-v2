@@ -11,7 +11,6 @@ import {
 import { toast } from "sonner"
 import { Chevron } from "../../components/icons/Chevron"
 import { Spinner } from "../../components/Spinner"
-import { checkCodeAction } from "./actions"
 
 const Slot = (props: SlotProps) => {
 	return (
@@ -96,8 +95,15 @@ const CodeInput = () => {
 	)
 }
 
-export const CodeForm = () => {
-	const [state, action] = useFormState(checkCodeAction, { error: "" })
+interface Props {
+	action: (
+		state: { error: string },
+		data: FormData,
+	) => Promise<{ error: string }>
+}
+
+export const CodeForm = (props: Props) => {
+	const [state, action] = useFormState(props.action, { error: "" })
 
 	React.useEffect(() => {
 		if (!state.error) return

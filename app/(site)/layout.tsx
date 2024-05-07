@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 import Local from "next/font/local"
 import { cx } from "class-variance-authority"
 import { Toaster } from "sonner"
+import { env } from "@/env"
 
 const FontSans = Local({
 	src: "../../assets/fonts/regular.woff2",
@@ -54,7 +55,10 @@ const RootLayout = ({ children }: RootLayoutProps) => {
 export const metadata: Metadata = {
 	title: "UnWorkshop",
 	description: "Look in. Stand out.",
-	metadataBase: new URL("https://unworkshop.walltowall.com"),
+	metadataBase:
+		env.NODE_ENV === "production"
+			? new URL("https://unworkshop.walltowall.com")
+			: new URL("http://localhost:3000"),
 }
 
 export const viewport: Viewport = {

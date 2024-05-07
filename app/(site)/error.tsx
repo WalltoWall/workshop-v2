@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/Button"
 import { Text } from "@/components/Text"
-import { DarkLayout } from "./DarkLayout"
+import { IntroLayout } from "./IntroLayout"
 
 const Error = (props: { error: Error; reset: () => void }) => {
 	return (
-		<DarkLayout>
+		<IntroLayout.Dark>
 			<div className="my-auto space-y-4 px-7 pb-20">
 				<Text style="heading" size={40}>
 					Oops! Something went wrong
@@ -16,7 +16,7 @@ const Error = (props: { error: Error; reset: () => void }) => {
 					Go back
 				</Button>
 			</div>
-		</DarkLayout>
+		</IntroLayout.Dark>
 	)
 }
 
