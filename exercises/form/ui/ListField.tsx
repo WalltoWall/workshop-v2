@@ -70,6 +70,8 @@ const SourceListSection = ({
 	const { field, answer, readOnly, stepIdx, fieldIdx } = useFieldContext()
 	assertListAnswer(answer)
 
+	const { actions, id } = useGroupContext()
+
 	const {
 		rows: initialRows = 5,
 		showAddButton = false,
@@ -80,13 +82,12 @@ const SourceListSection = ({
 	const answerCount = groupAnswer?.responses.length ?? 0
 	const rows = Math.max(answerCount, initialRows)
 
-	const { actions } = useGroupContext()
-
 	const submitAnswer = (value: string, responseIdx: number) => {
 		if (readOnly) return
 
 		actions.send({
 			type: "change-list-field-item",
+			id,
 			label,
 			value,
 			stepIdx,
@@ -101,6 +102,7 @@ const SourceListSection = ({
 
 		actions.send({
 			type: "add-list-field-item",
+			id,
 			label,
 			groupIdx,
 			fieldIdx,
