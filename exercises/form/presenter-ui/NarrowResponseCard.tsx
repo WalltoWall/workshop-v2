@@ -1,34 +1,26 @@
 import { Text } from "@/components/Text"
-import { HighlightedResponses } from "@/app/(site)/kickoff/[code]/exercises/[slug]/FormsExercise/HighlightedResponses"
-import type { NarrowFieldAnswer } from "@/app/(site)/kickoff/[code]/exercises/[slug]/FormsExercise/types"
+import type { NarrowFieldAnswer } from "../types"
+import { HighlightedResponses } from "../ui/HighlightedResponses"
+import { assertListAnswer } from "../utils"
 import type { ResponseCardProps } from "./ResponseCard"
 import { ResponseDialog } from "./ResponseDialog"
 
 export const NarrowResponseCard = ({
-	settings,
 	answer,
-	participantNumber,
 	field,
-	name,
 	questionNumber,
-	allParticipantAnswers,
+	stepAnswers,
+	name,
 }: ResponseCardProps<NarrowFieldAnswer>) => {
-	const displayName = settings.names ? name : `Participant ${participantNumber}`
-
 	const sourceStep = field.source?.step ?? Infinity
 	const sourceField = field.source?.step ?? Infinity
 
-	const sourceAnswer = allParticipantAnswers?.at(sourceStep)?.at(sourceField)
-
-	if (sourceAnswer && sourceAnswer.type !== "List") {
-		throw new Error(
-			"Invalid source answer for Narrow exercise. Only 'List' types are supported.",
-		)
-	}
+	const sourceAnswer = stepAnswers?.at(sourceStep)?.at(sourceField)
+	assertListAnswer(sourceAnswer)
 
 	return (
 		<ResponseDialog
-			name={displayName}
+			name={name}
 			field={field}
 			questionNumber={questionNumber}
 			trigger={

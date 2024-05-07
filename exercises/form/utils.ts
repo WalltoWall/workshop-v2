@@ -1,5 +1,8 @@
 import { stripIndent } from "common-tags"
+import type { Answer } from "@/party/types"
 import type {
+	FieldSource,
+	FormAnswer,
 	FormField,
 	FormFieldAnswer,
 	ListFieldAnswer,
@@ -49,6 +52,16 @@ const variants: Record<TaglineVariantOption, TaglineVariant> = {
 
 export function getTaglineVariant(variant: TaglineVariantOption) {
 	return variants[variant]
+}
+
+export function assertFormAnswer(answer: Answer): asserts answer is FormAnswer {
+	if (answer.type !== "form") {
+		throw new Error(stripIndent`
+			Invalid answer found for this exercise. 
+				Expected: "form"
+				Received: "${answer.type}"
+		`)
+	}
 }
 
 export function assertListAnswer(
@@ -108,5 +121,13 @@ export function assertListSource(
 				Expected: "List"
 				Received: "${source.type}"
 		`)
+	}
+}
+
+export function assertValidSource(
+	source: FieldSource | undefined,
+): asserts source is FieldSource {
+	if (!source?.step || !source.field) {
+		throw new Error("Invalid source found for this field.")
 	}
 }

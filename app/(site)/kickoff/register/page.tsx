@@ -39,7 +39,7 @@ const KickoffRegisterPage = async (props: Props) => {
 		const participant = await client.registerParticipant({
 			name: form.name,
 			kickoffId: kickoff!._id,
-			recoveryCode: uid(),
+			recoveryCode: uid(6),
 		})
 
 		cookies().set({

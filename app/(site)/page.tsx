@@ -1,3 +1,4 @@
+import type { Viewport } from "next"
 import { Text } from "@/components/Text"
 import { UnworkshopTitle } from "@/components/UnworkshopTitle"
 import { CodeForm } from "./CodeForm"
@@ -19,6 +20,11 @@ const Home = () => {
 			</div>
 		</DarkLayout>
 	)
+}
+
+export const viewport: Viewport = {
+	colorScheme: "dark",
+	themeColor: "#000",
 }
 
 export default Home

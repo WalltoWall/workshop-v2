@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from "next"
 import Local from "next/font/local"
 import { cx } from "class-variance-authority"
 import { Toaster } from "sonner"
-import { env } from "@/env"
 
 const FontSans = Local({
 	src: "../../assets/fonts/regular.woff2",
@@ -59,8 +58,8 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-	colorScheme: "dark",
-	themeColor: "#000",
+	colorScheme: "light",
+	themeColor: "#fff",
 }
 
 export default RootLayout

@@ -1,6 +1,6 @@
 import type * as Party from "partykit/server"
 import { debounce } from "perfect-debounce"
-import type { FormField } from "@/exercises/form/messages"
+import type { BaseFormMessage } from "@/exercises/form/messages"
 import {
 	type FormFieldAnswer,
 	type ListFieldAnswer,
@@ -82,7 +82,7 @@ export default class UnworkshopServer implements Party.Server {
 
 	getFormFieldAnswer<T extends FormFieldAnswer>(
 		conn: Party.Connection,
-		msg: FormField,
+		msg: BaseFormMessage,
 		init: T,
 	) {
 		if (this.answer.type !== "form") {
@@ -110,7 +110,7 @@ export default class UnworkshopServer implements Party.Server {
 
 	getListResponses(
 		conn: Party.Connection,
-		msg: FormField & { label?: string; groupIdx: number },
+		msg: BaseFormMessage & { label?: string; groupIdx: number },
 	) {
 		const fieldAnswer = this.getFormFieldAnswer<ListFieldAnswer>(conn, msg, {
 			type: "List",

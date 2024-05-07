@@ -12,6 +12,9 @@ const ExercisesPage = async (props: Props) => {
 		client.findParticipantViaCookie(),
 		client.findKickoffOrThrow(props.params.code),
 	])
+
+	console.log({ participant })
+
 	assertOnboarded(participant, kickoff)
 
 	const code = props.params.code

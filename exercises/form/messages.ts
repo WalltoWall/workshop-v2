@@ -1,13 +1,13 @@
 import { z } from "zod"
 
-const FormField = z.object({
+const BaseFormMessage = z.object({
 	id: z.string(),
 	fieldIdx: z.number(),
 	stepIdx: z.number(),
 })
-export type FormField = z.infer<typeof FormField>
+export type BaseFormMessage = z.infer<typeof BaseFormMessage>
 
-export const ChangeListFieldItem = FormField.extend({
+export const ChangeListFieldItem = BaseFormMessage.extend({
 	type: z.literal("change-list-field-item"),
 	groupIdx: z.number(),
 	label: z.string().optional(),
@@ -15,28 +15,28 @@ export const ChangeListFieldItem = FormField.extend({
 	value: z.string(),
 })
 
-export const AddListFieldItem = FormField.extend({
+export const AddListFieldItem = BaseFormMessage.extend({
 	type: z.literal("add-list-field-item"),
 	groupIdx: z.number(),
 	label: z.string().optional(),
 })
 
-export const SetNarrowFieldItem = FormField.extend({
+export const SetNarrowFieldItem = BaseFormMessage.extend({
 	type: z.literal("set-narrow-field-item"),
 	value: z.string(),
 })
 
-export const ChangeTaglineFieldItem = FormField.extend({
+export const ChangeTaglineFieldItem = BaseFormMessage.extend({
 	type: z.literal("change-tagline-field-item"),
 	responseIdx: z.number(),
 	value: z.string(),
 })
 
-export const AddTaglineFieldItem = FormField.extend({
+export const AddTaglineFieldItem = BaseFormMessage.extend({
 	type: z.literal("add-tagline-field-item"),
 })
 
-export const ChangeTextField = FormField.extend({
+export const ChangeTextField = BaseFormMessage.extend({
 	type: z.literal("change-text-field"),
 	value: z.string(),
 })

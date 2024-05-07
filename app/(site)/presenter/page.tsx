@@ -1,17 +1,13 @@
 import React from "react"
 import { redirect } from "next/navigation"
-import { zfd } from "zod-form-data"
 import { Button } from "@/components/Button"
 import { Text } from "@/components/Text"
 import { PresenterHeader } from "./PresenterHeader"
 
-const FormSchema = zfd.formData({ code: zfd.text() })
-
 async function navigateToWorkshop(data: FormData) {
 	"use server"
 
-	const form = FormSchema.parse(data)
-	redirect(`/presenter/${form.code}`)
+	redirect(`/presenter/${data.get("code")}`)
 }
 
 const PresenterPage = () => {

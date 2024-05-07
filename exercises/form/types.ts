@@ -1,5 +1,9 @@
 import type * as ST from "@/sanity/types.gen"
 
+export type FormPresenterViewSettings = {
+	names: boolean
+}
+
 export type FormAnswer = {
 	type: "form"
 	step: number
@@ -42,3 +46,5 @@ export type FormFieldAnswer =
 	| TaglineFieldAnswer
 
 export type FormStepAnswer = Array<FormFieldAnswer>
+
+export type FieldSource = NonNullable<FormField["source"]>

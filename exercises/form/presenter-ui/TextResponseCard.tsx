@@ -1,21 +1,17 @@
 import { Text } from "@/components/Text"
-import type { TextFieldAnswer } from "@/app/(site)/kickoff/[code]/exercises/[slug]/FormsExercise/types"
+import type { TextFieldAnswer } from "../types"
 import type { ResponseCardProps } from "./ResponseCard"
 import { ResponseDialog } from "./ResponseDialog"
 
 export const TextResponseCard = ({
-	settings,
 	answer,
-	participantNumber,
 	name,
 	field,
 	questionNumber,
 }: ResponseCardProps<TextFieldAnswer>) => {
-	const displayName = settings.names ? name : `Participant ${participantNumber}`
-
 	return (
 		<ResponseDialog
-			name={displayName}
+			name={name}
 			field={field}
 			questionNumber={questionNumber}
 			trigger={

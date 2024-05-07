@@ -1,4 +1,3 @@
-import type { Viewport } from "next"
 import { client } from "@/sanity/client"
 import { ParticipantModal } from "./[code]/exercises/ParticipantModal"
 import { LogoLink } from "./LogoLink"
@@ -35,11 +34,6 @@ const KickoffLayout = (props: Props) => {
 			</div>
 		</div>
 	)
-}
-
-export const viewport: Viewport = {
-	colorScheme: "light",
-	themeColor: "#fff",
 }
 
 export default KickoffLayout

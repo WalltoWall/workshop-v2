@@ -1,3 +1,4 @@
+import React from "react"
 import { notFound } from "next/navigation"
 import { Text } from "@/components/Text"
 import { client } from "@/sanity/client"
@@ -14,31 +15,28 @@ const PresenterKickOffPage = async (props: Props) => {
 	if (!kickoff) notFound()
 
 	return (
-		<>
+		<React.Suspense>
 			<PresenterHeader
 				kickoffCode={props.params.code}
 				exercises={kickoff.exercises ?? []}
 			/>
-			<div className="space-y-4 px-7 py-8">
+
+			<div className="px-7 py-8">
 				<Text style="heading" size={40}>
 					Exercises
 				</Text>
 
-				<ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				<div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					{kickoff.exercises?.map((exercise) => (
-						<li key={exercise._id}>
-							<ExerciseCard
-								kickoffCode={kickoff.code.current}
-								name={exercise.name}
-								slug={exercise.slug.current}
-								type={exercise.type}
-								presenter
-							/>
-						</li>
+						<ExerciseCard
+							key={exercise._id}
+							href={`/presenter/${kickoff.code.current}/${exercise.slug.current}`}
+							name={exercise.name}
+						/>
 					))}
-				</ul>
+				</div>
 			</div>
-		</>
+		</React.Suspense>
 	)
 }
 

@@ -2,25 +2,21 @@
 
 import React from "react"
 import { match } from "ts-pattern"
-import type {
-	FormField,
-	FormFieldAnswer,
-	FormStepAnswer,
-} from "@/app/(site)/kickoff/[code]/exercises/[slug]/FormsExercise/types"
-import type { FormPresenterViewSettings } from "./FormResponses"
+import type { FormField, FormFieldAnswer, FormStepAnswer } from "../types"
 import { ListResponseCard } from "./ListResponseCard"
 import { NarrowResponseCard } from "./NarrowResponseCard"
 import { TaglineResponseCard } from "./TaglineResponseCard"
 import { TextResponseCard } from "./TextResponseCard"
 
-export type ResponseCardProps<T extends FormFieldAnswer = FormFieldAnswer> = {
+export interface ResponseCardProps<
+	T extends FormFieldAnswer = FormFieldAnswer,
+> {
 	answer: T
-	allParticipantAnswers?: FormStepAnswer[]
+	stepAnswers: FormStepAnswer[]
 	name: string
 	field: FormField
-	settings: FormPresenterViewSettings
-	participantNumber: number
 	questionNumber: number
+	isGroupExercise: boolean
 }
 
 export const ResponseCard = (props: ResponseCardProps) => {

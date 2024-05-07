@@ -1,8 +1,12 @@
 import React from "react"
 import { Text } from "@/components/Text"
-import { HighlightedResponses } from "@/app/(site)/kickoff/[code]/exercises/[slug]/FormsExercise/HighlightedResponses"
-import type { TaglineFieldAnswer } from "@/app/(site)/kickoff/[code]/exercises/[slug]/FormsExercise/types"
-import { getTaglineVariant } from "@/app/(site)/kickoff/[code]/exercises/[slug]/FormsExercise/utils"
+import type { TaglineFieldAnswer } from "../types"
+import { HighlightedResponses } from "../ui/HighlightedResponses"
+import {
+	assertListAnswer,
+	assertValidSource,
+	getTaglineVariant,
+} from "../utils"
 import type { ResponseCardProps } from "./ResponseCard"
 import { ResponseDialog } from "./ResponseDialog"
 import { Slider } from "./Slider"
@@ -10,33 +14,25 @@ import { Slider } from "./Slider"
 export const TaglineResponseCard = ({
 	name,
 	answer,
-	allParticipantAnswers,
+	stepAnswers,
 	field,
-	settings,
-	participantNumber,
 	questionNumber,
 }: ResponseCardProps<TaglineFieldAnswer>) => {
-	if (!field.source?.step || !field.source.field) {
-		throw new Error("Invalid tagline source field")
-	}
+	assertValidSource(field.source)
 
-	const sourceAnswer = allParticipantAnswers
+	const sourceAnswer = stepAnswers
 		?.at(field.source.step - 1)
 		?.at(field.source.field - 1)
-
-	if (sourceAnswer?.type !== "List") {
-		throw new Error("Invalid resolved tagline source answer.")
-	}
+	assertListAnswer(sourceAnswer)
 
 	const variant = getTaglineVariant(field.color ?? "red")
-	const displayName = settings.names ? name : `Participant ${participantNumber}`
 
-	const words = sourceAnswer.groups.at(0)?.responses.filter(Boolean) ?? []
+	const words = sourceAnswer?.groups.at(0)?.responses.filter(Boolean) ?? []
 	const answers = answer.responses.filter(Boolean)
 
 	return (
 		<ResponseDialog
-			name={displayName}
+			name={name}
 			field={field}
 			questionNumber={questionNumber}
 			trigger={

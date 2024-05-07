@@ -1,46 +1,40 @@
 import { notFound } from "next/navigation"
+import { uid } from "uid"
 import { client } from "@/sanity/client"
+import { FormPresenter } from "@/exercises/form/presenter-ui"
+import { GroupProvider } from "@/groups/group-context"
 import { PresenterHeader } from "../../PresenterHeader"
-import { BrainstormPresenterView } from "./_BrainstormExercise/BrainstormPresenterView"
-import { FormPresenterView } from "./_FormExercise/"
-import { QuadrantsPresenterView } from "./_QuadrantsExercise/QuadrantsPresenterView"
-import { SlidersPresenterView } from "./_SlidersExercise/SlidersPresenterView"
 
-type Props = {
+interface Props {
 	params: { code: string; slug: string }
 }
 
 const PresenterExercisePage = async (props: Props) => {
-	const kickoff = await client.findKickoffOrThrow(props.params.code)
-	if (!kickoff) notFound()
-
-	const exercise = await client.findExerciseBySlug(props.params.slug)
+	const [kickoff, exercise] = await Promise.all([
+		client.findKickoffOrThrow(props.params.code),
+		client.findExerciseBySlug(props.params.slug),
+	])
 	if (!exercise) notFound()
 
 	const exercises = kickoff.exercises ?? []
+	const id = `presenter-${uid(5)}`
 
 	return (
-		<>
+		<GroupProvider
+			slug={exercise.slug.current}
+			type={exercise.type}
+			participantId={id}
+		>
 			<PresenterHeader
 				kickoffCode={props.params.code}
 				exercises={exercises}
 				exercise={exercise}
 			/>
 
-			{exercise.type === "brainstorm" && (
-				<BrainstormPresenterView exercise={exercise} />
-			)}
-			{exercise.type === "quadrants" && (
-				<QuadrantsPresenterView exercise={exercise} />
-			)}
 			{exercise.type === "form" && (
-				<FormPresenterView kickoff={kickoff} exercise={exercise} />
+				<FormPresenter kickoff={kickoff} exercise={exercise} />
 			)}
-
-			{exercise.type === "sliders" && (
-				<SlidersPresenterView exercise={exercise} />
-			)}
-		</>
+		</GroupProvider>
 	)
 }
 
