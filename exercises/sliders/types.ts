@@ -1,1 +1,1 @@
-export type SliderAnswer = { type: "sliders" }
+export type SliderAnswer = { type: "sliders"; step: number }

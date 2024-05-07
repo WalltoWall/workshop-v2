@@ -42,7 +42,3 @@ export type FormFieldAnswer =
 	| TaglineFieldAnswer
 
 export type FormStepAnswer = Array<FormFieldAnswer>
-
-export type SharedFieldProps = {}
-
-export type FieldProps<T = unknown> = T & SharedFieldProps

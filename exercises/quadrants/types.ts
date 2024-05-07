@@ -1,1 +1,1 @@
-export type QuadrantsAnswer = { type: "quadrants" }
+export type QuadrantsAnswer = { type: "quadrants"; step: number }

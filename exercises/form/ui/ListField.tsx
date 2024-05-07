@@ -5,6 +5,7 @@ import { Text } from "@/components/Text"
 import { useGroupContext } from "@/groups/group-context"
 import { useRememberCursorPosition } from "../hooks"
 import type { ListFieldAnswer } from "../types"
+import { assertListAnswer } from "../utils"
 import { PositiveNumber } from "../validators"
 import { AddButton } from "./AddButton"
 import { useFieldContext } from "./FieldContext"
@@ -67,9 +68,7 @@ const SourceListSection = ({
 	groupAnswer,
 }: SourceListSectionProps) => {
 	const { field, answer, readOnly, stepIdx, fieldIdx } = useFieldContext()
-	if (answer && answer.type !== "List") {
-		throw new Error("Invalid answer data found.")
-	}
+	assertListAnswer(answer)
 
 	const {
 		rows: initialRows = 5,
@@ -140,9 +139,7 @@ const SourceListSection = ({
 
 const SourceListField = () => {
 	const { answer, allSteps, allAnswers, field } = useFieldContext()
-	if (answer && answer.type !== "List") {
-		throw new Error("Invalid answer data found.")
-	}
+	assertListAnswer(answer)
 
 	const stepSrc = PositiveNumber.parse(field.source?.step)
 	const fieldSrc = PositiveNumber.parse(field.source?.field)
@@ -176,9 +173,7 @@ const SourceListField = () => {
 
 const PlainListField = () => {
 	const { answer } = useFieldContext()
-	if (answer && answer.type !== "List") {
-		throw new Error("Invalid answer data found.")
-	}
+	assertListAnswer(answer)
 
 	const { actions } = useGroupContext()
 	const { field, stepIdx, fieldIdx, readOnly } = useFieldContext()

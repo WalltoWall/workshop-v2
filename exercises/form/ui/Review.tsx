@@ -2,6 +2,7 @@ import { Text } from "@/components/Text"
 import type * as ST from "@/sanity/types.gen"
 import type { FormStepAnswer } from "@/exercises/form/types"
 import { FieldContainer } from "./FieldContainer"
+import { FieldProvider } from "./FieldContext"
 import { FieldRenderer } from "./FieldRenderer"
 import { Prompt } from "./Prompt"
 
@@ -27,27 +28,34 @@ export const Review = ({ allAnswers = [], exercise }: Props) => {
 				step.fields?.map((field, fieldIdx) => {
 					const stepAnswer = allAnswers.at(stepIdx)
 					const fieldAnswer = stepAnswer?.at(fieldIdx)
+					const hasMultipleFields = step.fields!.length > 1
 
 					return (
-						<FieldContainer key={field._key}>
-							<Prompt
-								className="mb-5"
-								num={stepIdx + fieldIdx + 1}
-								additionalText={field.additionalText}
-							>
-								{field.prompt}
-							</Prompt>
+						<FieldProvider
+							key={field.prompt}
+							fieldIdx={fieldIdx}
+							stepIdx={stepIdx}
+							readOnly
+							field={field}
+							answer={fieldAnswer}
+							exerciseId={exercise._id}
+							allAnswers={allAnswers}
+							allSteps={steps}
+						>
+							<FieldContainer>
+								{field.type !== "Tagline" && (
+									<Prompt
+										className="mb-5"
+										num={hasMultipleFields ? stepIdx + fieldIdx + 1 : undefined}
+										additionalText={field.additionalText}
+									>
+										{field.prompt}
+									</Prompt>
+								)}
 
-							<FieldRenderer
-								exercise={exercise}
-								field={field}
-								stepIdx={stepIdx}
-								fieldIdx={fieldIdx}
-								allAnswers={allAnswers}
-								answer={fieldAnswer}
-								readOnly
-							/>
-						</FieldContainer>
+								<FieldRenderer />
+							</FieldContainer>
+						</FieldProvider>
 					)
 				}),
 			)}

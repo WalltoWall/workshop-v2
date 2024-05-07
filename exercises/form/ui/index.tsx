@@ -55,8 +55,6 @@ export const FormExercise = ({ exercise, participant, groupSlug }: Props) => {
 	const goBackToExerciseList = () =>
 		router.push(`/kickoff/${params.code}/exercises`)
 
-	if (!stepData || !stepData.fields) return null
-
 	return (
 		<div className="flex flex-[1_1_0] flex-col justify-between">
 			<ErrorBoundary fallback={<InvalidField className="my-6" />}>
@@ -66,9 +64,9 @@ export const FormExercise = ({ exercise, participant, groupSlug }: Props) => {
 
 				{!onReviewScreen && (
 					<div>
-						{stepData.fields.map((field, fieldIdx) => {
+						{stepData?.fields?.map((field, fieldIdx) => {
 							const fieldAnswer = stepAnswer?.at(fieldIdx)
-							const hasMultipleFields = stepData.fields!.length > 1
+							const hasMultipleFields = stepData && stepData.fields!.length > 1
 
 							return (
 								<FieldProvider

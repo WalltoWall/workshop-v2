@@ -1,10 +1,10 @@
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from "lucide-react"
 import React from "react"
-import { usePathname, useRouter } from "next/navigation"
 import { cx } from "class-variance-authority"
 import * as R from "remeda"
 import { Text } from "@/components/Text"
 import { takeLast } from "@/lib/take-last"
+import { useGroupContext } from "@/groups/group-context"
 import { Checkmark } from "./icons/Checkmark"
 import { Spinner } from "./Spinner"
 
@@ -16,7 +16,7 @@ interface Props {
 	activeStep: number
 	className?: string
 	onFinish?: () => void
-	onNextStep?: (nextStep: number) => void
+	onStepChange?: (step: number) => void
 }
 
 export const Steps = ({
@@ -25,18 +25,14 @@ export const Steps = ({
 	activeStep = 1,
 	className,
 	onFinish,
-	onNextStep,
+	onStepChange,
 }: Props) => {
-	const router = useRouter()
-	const pathname = usePathname()
-	const [isPending, startTransition] = React.useTransition()
+	const [pending, startTransition] = React.useTransition()
+	const { actions } = useGroupContext()
 
 	const goToStep = (step: number) => {
-		startTransition(() => {
-			const params = new URLSearchParams({ step: step.toString() })
-			router.push(pathname + "?" + params.toString())
-			onNextStep?.(step)
-		})
+		actions.send({ type: "go-to-step", value: step })
+		onStepChange?.(step)
 	}
 
 	const handleNext = () => {
@@ -84,7 +80,7 @@ export const Steps = ({
 					onClick={handleNext}
 					disabled={disabled}
 				>
-					{isPending ? (
+					{pending ? (
 						<Spinner className="size-4 text-white" />
 					) : activeStep - 1 === steps ? (
 						<Checkmark />

@@ -18,6 +18,7 @@ export const Textarea = ({ className, onChange, value, ...props }: Props) => {
 			className={clsx(className, textareaStyles, "resize-y")}
 			onChange={rememberCursor.onChange}
 			value={value}
+			spellCheck={false}
 			{...props}
 		/>
 	)

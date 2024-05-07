@@ -1,17 +1,11 @@
 import { z } from "zod"
 import type { BrainstormAnswer } from "@/exercises/brainstorm/types"
-import {
-	AddListFieldItemMessage,
-	ChangeListFieldItemMessage,
-} from "@/exercises/form/messages"
+import * as FormMessages from "@/exercises/form/messages"
 import type { FormAnswer } from "@/exercises/form/types"
 import type { QuadrantsAnswer } from "@/exercises/quadrants/types"
+import * as SharedMessages from "@/exercises/shared-messages"
 import type { SliderAnswer } from "@/exercises/sliders/types"
-import {
-	ClearRoleMessage,
-	SetRoleMessage,
-	type GroupRole,
-} from "@/groups/messages"
+import * as GroupMessages from "@/groups/messages"
 
 export type Answer =
 	| FormAnswer
@@ -20,17 +14,25 @@ export type Answer =
 	| SliderAnswer
 	| { type: "unknown" }
 
-export type Participants = Record<string, GroupRole>
+export type Participants = Record<string, GroupMessages.GroupRole>
 
 // Incoming messages
 export const PartyIncomingMessage = z.discriminatedUnion("type", [
+	// Global Messages
+	SharedMessages.GoToStep,
+
 	// Group Messages
-	SetRoleMessage,
-	ClearRoleMessage,
+	GroupMessages.SetRole,
+	GroupMessages.ClearRole,
 
 	// Form Messages
-	ChangeListFieldItemMessage,
-	AddListFieldItemMessage,
+	FormMessages.ChangeListFieldItem,
+	FormMessages.AddListFieldItem,
+
+	FormMessages.AddNarrowFieldItem,
+
+	FormMessages.AddTaglineFieldItem,
+	FormMessages.ChangeTaglineFieldItem,
 ])
 export type PartyIncomingMessage = z.infer<typeof PartyIncomingMessage>
 

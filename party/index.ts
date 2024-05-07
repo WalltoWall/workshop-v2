@@ -1,6 +1,10 @@
 import type * as Party from "partykit/server"
 import { debounce } from "perfect-debounce"
-import { ChangeListFieldItemMessage } from "@/exercises/form/messages"
+import {
+	type FormFieldAnswer,
+	type ListFieldAnswer,
+	type TaglineFieldAnswer,
+} from "@/exercises/form/types"
 import {
 	ExerciseType,
 	PartyIncomingMessage,
@@ -62,23 +66,21 @@ export default class UnworkshopServer implements Party.Server {
 			case "form":
 				return { type: "form", step: 1, data: {} }
 			case "brainstorm":
-				return { type: "brainstorm" }
+				return { type: "brainstorm", step: 1 }
 			case "quadrants":
-				return { type: "quadrants" }
+				return { type: "quadrants", step: 1 }
 			case "sliders":
-				return { type: "sliders" }
+				return { type: "sliders", step: 1 }
 
 			default:
 				return { type: "unknown" }
 		}
 	}
 
-	getListResponses(
+	getFormFieldAnswer<T extends FormFieldAnswer>(
 		conn: Party.Connection,
-		msg: Pick<
-			ChangeListFieldItemMessage,
-			"stepIdx" | "fieldIdx" | "groupIdx" | "label"
-		>,
+		msg: { stepIdx: number; fieldIdx: number },
+		init: T,
 	) {
 		if (this.answer.type !== "form") {
 			this.sendAndThrow("Expected a form field!", conn)
@@ -93,12 +95,24 @@ export default class UnworkshopServer implements Party.Server {
 		const stepAnswer = steps[msg.stepIdx]!
 
 		// Initialize the field answer.
-		stepAnswer[msg.fieldIdx] ??= { type: "List", groups: [] }
+		stepAnswer[msg.fieldIdx] ??= init
 		const fieldAnswer = stepAnswer[msg.fieldIdx]!
 
-		if (fieldAnswer.type !== "List") {
-			this.sendAndThrow("Expeceted a list field!", conn)
+		if (fieldAnswer.type !== init.type) {
+			this.sendAndThrow(`Expeceted a ${init.type} field!`, conn)
 		}
+
+		return fieldAnswer as T
+	}
+
+	getListResponses(
+		conn: Party.Connection,
+		msg: { stepIdx: number; fieldIdx: number; label: string; groupIdx: number },
+	) {
+		const fieldAnswer = this.getFormFieldAnswer<ListFieldAnswer>(conn, msg, {
+			type: "List",
+			groups: [],
+		})
 
 		// Initialize the group answer. If this is a plain list field,
 		// then there is only one group.
@@ -131,6 +145,17 @@ export default class UnworkshopServer implements Party.Server {
 
 		// Reducer for messages.
 		switch (msg.type) {
+			// Shared Messages
+			case "go-to-step": {
+				if (this.answer.type === "unknown") return
+				this.answer.step = msg.value
+
+				this.broadcastAnswers()
+
+				break
+			}
+
+			// Group Messages
 			case "set-role": {
 				this.participants[conn.id] = msg.role
 				this.broadcastParticipants()
@@ -145,6 +170,7 @@ export default class UnworkshopServer implements Party.Server {
 				break
 			}
 
+			// Form Messages
 			case "change-list-field-item": {
 				const responses = this.getListResponses(conn, msg)
 				responses[msg.responseIdx] = msg.value
@@ -157,6 +183,32 @@ export default class UnworkshopServer implements Party.Server {
 			case "add-list-field-item": {
 				const responses = this.getListResponses(conn, msg)
 				responses.push("")
+
+				this.broadcastAnswers()
+
+				break
+			}
+
+			case "change-tagline-field-item": {
+				const fieldAnswer = this.getFormFieldAnswer<TaglineFieldAnswer>(
+					conn,
+					msg,
+					{ type: "Tagline", responses: [] },
+				)
+				fieldAnswer.responses[msg.responseIdx] = msg.value
+
+				this.broadcastAnswers()
+
+				break
+			}
+
+			case "add-tagline-field-item": {
+				const fieldAnswer = this.getFormFieldAnswer<TaglineFieldAnswer>(
+					conn,
+					msg,
+					{ type: "Tagline", responses: [] },
+				)
+				fieldAnswer.responses.push("")
 
 				this.broadcastAnswers()
 

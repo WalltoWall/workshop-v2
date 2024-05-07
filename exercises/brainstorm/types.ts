@@ -1,1 +1,1 @@
-export type BrainstormAnswer = { type: "brainstorm" }
+export type BrainstormAnswer = { type: "brainstorm"; step: number }

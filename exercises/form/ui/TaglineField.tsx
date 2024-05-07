@@ -1,8 +1,15 @@
 import React from "react"
 import clsx from "clsx"
-import type { FieldProps, FormFieldAnswer } from "../types"
-import { getBadWords, getTaglineVariant, sanitizeString } from "../utils"
+import { useGroupContext } from "@/groups/group-context"
+import {
+	assertListSource,
+	assertTaglineAnswer,
+	getBadWords,
+	getTaglineVariant,
+	sanitizeString,
+} from "../utils"
 import { AddButton } from "./AddButton"
+import { useFieldContext } from "./FieldContext"
 import { HighlightedResponses } from "./HighlightedResponses"
 import { Prompt } from "./Prompt"
 import { Textarea, textareaStyles } from "./Textarea"
@@ -20,13 +27,14 @@ const HighlighterTextarea = ({
 	className,
 	badWords,
 	invalidClassName = "text-red-63",
+	value = "",
 	...props
 }: HighlighterTextareaProps) => {
-	const words = props.value.split(" ")
+	const words = value.split(" ")
 
 	return (
 		<div className={clsx(className, "relative flex rounded-lg")}>
-			<Textarea className="text-black/0 caret-black" {...props} />
+			<Textarea className="text-black/0 caret-black" value={value} {...props} />
 
 			<div
 				className={clsx(
@@ -52,34 +60,35 @@ const HighlighterTextarea = ({
 	)
 }
 
-type Props = FieldProps<{
-	source: FormFieldAnswer
-}>
+export const TaglineField = () => {
+	const { getFieldSource, answer, field, readOnly, fieldIdx, stepIdx } =
+		useFieldContext()
+	const { actions } = useGroupContext()
 
-export const TaglineField = ({ source, answer, actions, ...props }: Props) => {
-	if (source.type !== "List") {
-		throw new Error(
-			"Tagline fields only support List field answers as a source.",
-		)
+	const source = getFieldSource()
+
+	assertTaglineAnswer(answer)
+	assertListSource(source)
+
+	const variant = getTaglineVariant(field.color ?? "red")
+
+	const [answerOne, answerTwo] = answer?.responses ?? []
+
+	const handleChange = (value: string, idx: number) => {
+		actions.send({
+			type: "change-tagline-field-item",
+			value,
+			responseIdx: idx,
+			fieldIdx,
+			stepIdx,
+		})
 	}
 
-	if (answer && answer.type !== "Tagline") {
-		throw new Error("Invalid answer data found.")
-	}
-
-	const variant = getTaglineVariant(props.field.color ?? "red")
-
-	const answerOne = answer?.responses.at(0) ?? ""
-	const answerTwo = answer?.responses.at(1)
-
-	const handleChange = (answerOne: string, answerTwo?: string) => {
-		const answers = [answerOne]
-		if (typeof answerTwo === "string") answers.push(answerTwo)
-
-		actions.submitFieldAnswer({
-			answer: { type: "Tagline", responses: answers },
-			fieldIdx: props.fieldIdx,
-			stepIdx: props.stepIdx,
+	const addResponse = () => {
+		actions.send({
+			type: "add-tagline-field-item",
+			stepIdx,
+			fieldIdx,
 		})
 	}
 
@@ -89,9 +98,9 @@ export const TaglineField = ({ source, answer, actions, ...props }: Props) => {
 	const sharedInputProps = {
 		className: "mt-5",
 		name: INPUT_NAME,
-		readOnly: props.readOnly,
+		readOnly,
 		badWords,
-		placeholder: props.field.placeholder,
+		placeholder: field.placeholder,
 	}
 
 	// TODO: The children type of <Prompt> only accepts strings, not React
@@ -102,7 +111,7 @@ export const TaglineField = ({ source, answer, actions, ...props }: Props) => {
 
 	return (
 		<div>
-			<Prompt num={props.fieldIdx + 1}>{prompt}</Prompt>
+			<Prompt num={fieldIdx + 1}>{prompt}</Prompt>
 
 			<HighlightedResponses
 				responses={sourceResponses}
@@ -113,32 +122,29 @@ export const TaglineField = ({ source, answer, actions, ...props }: Props) => {
 
 			<Prompt
 				className="mt-8"
-				num={props.fieldIdx + 2}
-				additionalText={props.field.additionalText}
+				num={fieldIdx + 2}
+				additionalText={field.additionalText}
 			>
-				{props.field.prompt}
+				{field.prompt}
 			</Prompt>
 
 			<HighlighterTextarea
-				value={answerOne}
-				onChange={(e) => handleChange(e.currentTarget.value, answerTwo)}
+				value={answerOne ?? ""}
+				onChange={(e) => handleChange(e.currentTarget.value, 0)}
 				invalidClassName={variant.invalidTextCn}
 				{...sharedInputProps}
 			/>
 
-			{typeof answerTwo === "undefined" && !props.readOnly && (
-				<AddButton
-					className="mt-2.5"
-					onClick={() => handleChange(answerOne, "")}
-				>
+			{answerTwo === undefined && !readOnly && (
+				<AddButton className="mt-2.5" onClick={addResponse}>
 					Add another response
 				</AddButton>
 			)}
 
-			{typeof answerTwo !== "undefined" && (
+			{answerTwo !== undefined && (
 				<HighlighterTextarea
 					value={answerTwo}
-					onChange={(e) => handleChange(answerOne, e.currentTarget.value)}
+					onChange={(e) => handleChange(e.currentTarget.value, 1)}
 					invalidClassName={variant.invalidTextCn}
 					{...sharedInputProps}
 				/>

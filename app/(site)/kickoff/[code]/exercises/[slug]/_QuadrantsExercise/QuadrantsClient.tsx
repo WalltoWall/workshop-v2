@@ -142,7 +142,7 @@ export const QuadrantsClient = ({
 				steps={totalSteps}
 				activeStep={step}
 				onFinish={() => router.push(`/kickoff/${kickoffCode}/exercises`)}
-				onNextStep={onStepChange}
+				onStepChange={onStepChange}
 			/>
 		</>
 	)
