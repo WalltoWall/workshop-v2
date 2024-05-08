@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import { CirclePicker } from "react-color"
 import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 import { Arrow } from "@/components/icons/Arrow"

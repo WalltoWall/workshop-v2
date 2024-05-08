@@ -11,7 +11,7 @@ const PresenterKickoffPage = async (props: Props) => {
 	const kickoff = await client.findKickoffOrThrow(props.params.code)
 
 	return (
-		<div className="px-7 py-8">
+		<>
 			<Text style="heading" size={40}>
 				Exercises
 			</Text>
@@ -25,7 +25,7 @@ const PresenterKickoffPage = async (props: Props) => {
 					/>
 				))}
 			</div>
-		</div>
+		</>
 	)
 }
 

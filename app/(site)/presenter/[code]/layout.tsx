@@ -11,10 +11,13 @@ const PresenterKickoffLayout = async (props: Props) => {
 	const exercises = kickoff.exercises ?? []
 
 	return (
-		<>
+		<div className="flex h-svh flex-col">
 			<PresenterHeader kickoffCode={props.params.code} exercises={exercises} />
-			{props.children}
-		</>
+
+			<main id="main" className="grow p-8">
+				{props.children}
+			</main>
+		</div>
 	)
 }
 

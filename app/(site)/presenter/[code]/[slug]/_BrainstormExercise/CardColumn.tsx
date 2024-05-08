@@ -1,8 +1,8 @@
 "use client"
 
 import React from "react"
-import { CirclePicker } from "react-color"
 import { Draggable, Droppable } from "@hello-pangea/dnd"
+import { CirclePicker } from "@/components/CirclePicker"
 import { ContextMenu } from "@/components/ContextMenu"
 import { BlackXIcon } from "@/components/icons/BlackXIcon"
 import type { MultiplayerData } from "@/components/Multiplayer/use-multiplayer"
@@ -55,11 +55,9 @@ export const CardColumn = ({
 					<CirclePicker
 						color={column.color}
 						colors={colorGroups}
-						circleSize={20}
-						circleSpacing={16}
-						width="7rem"
+						className="w-[6.5rem]"
 						onChange={(color) =>
-							actions.editColumnColor({ color: color.hex, columnId: column.id })
+							actions.editColumnColor({ color: color, columnId: column.id })
 						}
 					/>
 				</Popover>

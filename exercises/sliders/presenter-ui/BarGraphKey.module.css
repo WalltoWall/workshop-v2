@@ -1,0 +1,19 @@
+.container {
+	color: var(--color);
+}
+
+.solid {
+	background-color: var(--color);
+}
+
+.striped {
+	border-color: var(--color);
+	background-image: repeating-linear-gradient(
+		-45deg,
+		var(--color),
+		var(--color) 2px,
+		rgba(0, 0, 0, 0) 2px,
+		rgba(0, 0, 0, 0) 8px
+	);
+	background-size: 50px 50px;
+}

@@ -13,15 +13,15 @@ import { ResponseCard } from "./ResponseCard"
 
 interface Props {
 	exercise: ST.Exercise
-	participants: Record<string, ST.Participant>
+	participantsById: Record<string, ST.Participant>
 }
 
-export const FormResponses = ({ exercise, participants }: Props) => {
+export const FormResponses = ({ exercise, participantsById }: Props) => {
 	const groups = exercise.groups ?? []
-	const isGroupExercise = groups.length >= 1
 	const steps = exercise.form?.steps
-
 	if (!steps) throw new Error("Invalid form configuration found.")
+
+	const isGroupExercise = groups.length >= 1
 
 	const [settings, setSettings] = React.useState<FormPresenterViewSettings>({
 		names: isGroupExercise,
@@ -40,7 +40,7 @@ export const FormResponses = ({ exercise, participants }: Props) => {
 			}
 		}
 
-		const participant = participants[id]
+		const participant = participantsById[id]
 		if (!participant)
 			throw new Error("Could not find participant for id: " + id)
 

@@ -9,7 +9,7 @@ interface Props {
 
 export const SettingsMenu = ({ children }: Props) => (
 	<Popover.Root>
-		<Popover.Trigger className="ease fixed bottom-7 right-7 h-10 w-10 p-[0.125rem] transition duration-200 hover:opacity-75">
+		<Popover.Trigger className="ease fixed bottom-8 right-8 h-10 w-10 p-[0.125rem] transition duration-200 hover:opacity-75">
 			<span className="sr-only">Open Settings Menu</span>
 			<Gear />
 		</Popover.Trigger>

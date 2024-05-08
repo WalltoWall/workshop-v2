@@ -2,15 +2,14 @@
 
 import useEmblaCarousel, { type EmblaCarouselType } from "embla-carousel-react"
 import React, { useEffect } from "react"
-import { CirclePicker } from "react-color"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { ArrowButton } from "@/components/ArrowButton"
 import { Button } from "@/components/Button"
+import { CirclePicker } from "@/components/CirclePicker"
 import { SettingsMenu, SettingVisibility } from "@/components/SettingsMenu"
 import { Spinner } from "@/components/Spinner"
 import { Text } from "@/components/Text"
 import type * as ST from "@/sanity/types.gen"
-import { useMultiplayerQuadrants } from "@/app/(site)/kickoff/[code]/exercises/[slug]/_QuadrantsExercise/use-multiplayer-quadrants"
 import { PresentQuadrant } from "./PresentQuadrant"
 
 interface PresenterViewProps {
@@ -211,10 +210,8 @@ export const QuadrantsPresenterViewClient = ({
 				<CirclePicker
 					color={color}
 					colors={colors}
-					circleSize={20}
-					circleSpacing={8}
-					width="7.5rem"
-					onChange={(newColor) => setColor(newColor.hex)}
+					className="w-[6.5rem]"
+					onColorClick={setColor}
 				/>
 			</SettingsMenu>
 		</div>
