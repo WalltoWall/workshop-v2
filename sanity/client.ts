@@ -1,4 +1,4 @@
-import "server-only"
+// import "server-only"
 import React from "react"
 import { groq } from "next-sanity"
 import { cookies } from "next/headers"

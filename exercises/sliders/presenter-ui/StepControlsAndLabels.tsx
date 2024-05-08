@@ -1,5 +1,7 @@
+import React from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { Arrow } from "@/components/icons/Arrow"
+import { Spinner } from "@/components/Spinner"
 import { Text } from "@/components/Text"
 import type { SliderStep } from "../types"
 
@@ -12,6 +14,8 @@ interface Props {
 export const StepControlsAndLabels = ({ slider, stepIdx, sliders }: Props) => {
 	const pathname = usePathname()
 	const router = useRouter()
+	const [nextPending, startNextTransition] = React.useTransition()
+	const [prevPending, startPrevTransition] = React.useTransition()
 
 	const step = stepIdx + 1
 
@@ -21,11 +25,11 @@ export const StepControlsAndLabels = ({ slider, stepIdx, sliders }: Props) => {
 	}
 
 	function previousStep() {
-		goToStep(step - 1)
+		startPrevTransition(() => goToStep(step - 1))
 	}
 
 	function nextStep() {
-		goToStep(step + 1)
+		startNextTransition(() => goToStep(step + 1))
 	}
 
 	return (
@@ -37,20 +41,28 @@ export const StepControlsAndLabels = ({ slider, stepIdx, sliders }: Props) => {
 			<div className="flex items-center justify-center gap-5">
 				<button
 					disabled={stepIdx === 0}
-					className="disabled:opacity-50"
+					className="text-gray-50 disabled:opacity-50"
 					onClick={previousStep}
 				>
 					<span className="sr-only">Previous Slider</span>
-					<Arrow className="w-7 text-gray-50" />
+					{prevPending ? (
+						<Spinner className="size-7" />
+					) : (
+						<Arrow className="size-7" />
+					)}
 				</button>
 
 				<button
 					disabled={stepIdx >= sliders.length - 1}
-					className="disabled:opacity-50"
+					className="text-gray-50 disabled:opacity-50"
 					onClick={nextStep}
 				>
 					<span className="sr-only">Next Slider</span>
-					<Arrow className="w-7 rotate-180 text-gray-50" />
+					{nextPending ? (
+						<Spinner className="size-7" />
+					) : (
+						<Arrow className="size-7 rotate-180" />
+					)}
 				</button>
 			</div>
 

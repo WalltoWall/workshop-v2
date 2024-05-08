@@ -61,6 +61,9 @@ export const SlidersPresenter = ({ exercise }: Props) => {
 					settings={settings}
 					stepAnswers={stepAnswers}
 					slider={slider}
+					toggleTomorrow={() =>
+						setSettings({ ...settings, tomorrow: !settings.tomorrow })
+					}
 				/>
 			)}
 

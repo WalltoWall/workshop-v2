@@ -26,6 +26,8 @@ export type DotPlotViewSettings = {
 	type: "dot-plot"
 	lines: boolean
 	color: string
+	today: boolean
+	tomorrow: boolean
 }
 
 export type SlidersPresenterViewSettings =
