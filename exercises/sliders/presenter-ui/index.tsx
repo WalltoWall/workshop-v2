@@ -10,6 +10,7 @@ import { assertSlidersAnswer } from "../utils"
 import { BarGraphView } from "./BarGraphView"
 import { DotPlotView } from "./DotPlotView"
 import { SliderSettingsMenu } from "./SlidersSettingsMenu"
+import { StepControlsAndLabels } from "./StepControlsAndLabels"
 
 interface Props {
 	exercise: ST.Exercise
@@ -46,7 +47,7 @@ export const SlidersPresenter = ({ exercise }: Props) => {
 	const style = { "--color": settings.color } as React.CSSProperties
 
 	return (
-		<div className="h-full pb-16" style={style}>
+		<div className="flex h-full flex-col gap-8 pb-16" style={style}>
 			{settings.type === "bar-graph" && (
 				<BarGraphView
 					settings={settings}
@@ -62,6 +63,12 @@ export const SlidersPresenter = ({ exercise }: Props) => {
 					slider={slider}
 				/>
 			)}
+
+			<StepControlsAndLabels
+				slider={slider}
+				sliders={sliders}
+				stepIdx={stepIdx}
+			/>
 
 			<SliderSettingsMenu setSettings={setSettings} settings={settings} />
 		</div>

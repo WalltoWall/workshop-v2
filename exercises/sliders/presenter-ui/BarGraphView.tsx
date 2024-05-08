@@ -1,5 +1,4 @@
 import * as R from "remeda"
-import { Text } from "@/components/Text"
 import type {
 	BarGraphViewSettings,
 	SliderStep,
@@ -17,7 +16,7 @@ interface Props {
 
 export const BarGraphView = ({ settings, slider, stepAnswers }: Props) => {
 	return (
-		<div className="flex h-full flex-col gap-8">
+		<div className="flex grow flex-col gap-8">
 			<BarGraphKey className="self-start" />
 
 			<div className="relative flex grow justify-between gap-4 overflow-hidden rounded-t-3xl border-b-[10px] border-black px-4">
@@ -53,16 +52,6 @@ export const BarGraphView = ({ settings, slider, stepAnswers }: Props) => {
 						</div>
 					)
 				})}
-			</div>
-
-			<div className="flex justify-between">
-				<Text size={40} style="heading">
-					{slider.left_value}
-				</Text>
-
-				<Text size={40} style="heading">
-					{slider.right_value}
-				</Text>
 			</div>
 		</div>
 	)

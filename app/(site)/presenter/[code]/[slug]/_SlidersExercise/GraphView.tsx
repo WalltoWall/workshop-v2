@@ -19,7 +19,7 @@ export interface GraphViewProps {
 	isDisabledRight: boolean
 }
 
-const Bar = (props: { color: string }) => (
+const AxisBar = (props: { color: string }) => (
 	<div className="h-20" style={{ backgroundColor: props.color }} />
 )
 
@@ -226,53 +226,15 @@ export const GraphView = ({
 			</div>
 
 			<div className="relative -mb-8 grid grid-cols-[repeat(6,20px)] gap-x-[calc((100%-120px)/5)]">
-				<Bar color={color} />
-				<Bar color={color} />
-				<Bar color={color} />
-				<Bar color={color} />
-				<Bar color={color} />
-				<Bar color={color} />
+				<AxisBar color={color} />
+				<AxisBar color={color} />
+				<AxisBar color={color} />
+				<AxisBar color={color} />
+				<AxisBar color={color} />
+				<AxisBar color={color} />
 			</div>
 
 			<div className="h-2 bg-black" />
-
-			{/* TODO: Share this footer section with other similar areas */}
-			<div className="mt-12 flex justify-between">
-				<Text className="ml-1 uppercase text-40 font-heading capsize">
-					{leftText}
-				</Text>
-
-				<div className="flex items-center justify-center gap-5">
-					<button
-						onClick={() => {
-							if (isDisabledLeft) return
-
-							setSliderIndex((idx) => idx - 1)
-						}}
-						disabled={isDisabledLeft}
-						className="disabled:opacity-50"
-					>
-						<span className="sr-only">Previous Slider</span>
-						<Arrow className="w-7 text-gray-50" />
-					</button>
-
-					<button
-						onClick={() => {
-							if (isDisabledRight) return
-
-							setSliderIndex((idx) => idx + 1)
-						}}
-						disabled={isDisabledRight}
-						className="disabled:opacity-50"
-					>
-						<span className="sr-only">Next Slider</span>
-						<Arrow className="w-7 rotate-180 text-gray-50" />
-					</button>
-				</div>
-				<Text className="ml-1 uppercase text-40 font-heading capsize">
-					{rightText}
-				</Text>
-			</div>
 		</div>
 	)
 }
