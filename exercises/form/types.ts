@@ -1,13 +1,13 @@
 import type * as ST from "@/sanity/types.gen"
 
-export type FormPresenterViewSettings = {
-	names: boolean
-}
-
 export type FormAnswer = {
 	type: "form"
 	step: number
 	data: Record<string, Array<FormStepAnswer>>
+}
+
+export type FormPresenterViewSettings = {
+	names: boolean
 }
 
 export type FormStep = NonNullable<

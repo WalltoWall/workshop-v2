@@ -1,4 +1,4 @@
-import { Text } from "@/components/Text"
+import { FinalizeBanner } from "@/components/FinalizeBanner"
 import type * as ST from "@/sanity/types.gen"
 import type { FormStepAnswer } from "@/exercises/form/types"
 import { FieldContainer } from "./FieldContainer"
@@ -15,14 +15,8 @@ export const Review = ({ allAnswers = [], exercise }: Props) => {
 	const steps = exercise.form?.steps ?? []
 
 	return (
-		<div>
-			<Text
-				style="heading"
-				size={18}
-				className="mt-6 rounded-2xl bg-gray-97 px-8 py-6 text-center"
-			>
-				Please, finalize your answers
-			</Text>
+		<div className="mt-3">
+			<FinalizeBanner />
 
 			{steps.map((step, stepIdx) =>
 				step.fields?.map((field, fieldIdx) => {

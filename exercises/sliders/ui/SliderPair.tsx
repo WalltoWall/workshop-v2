@@ -5,43 +5,14 @@ import { SanityImage } from "@/components/SanityImage"
 import { Text } from "@/components/Text"
 import { showContributorWarning } from "@/lib/show-contributor-warning"
 import { isFilled, type MaybeSanityImage } from "@/sanity/helpers"
-import { type SliderItem } from "./SlidersExercise"
-import type { Answer } from "./types"
-import type { SliderActions } from "./use-multiplayer-sliders"
+import type { Actions } from "@/groups/group-context"
+import { DEFAULT_TODAY, DEFAULT_TOMORROW } from "../constants"
+import type { SliderStep, SliderStepAnswer } from "../types"
+import { RangeInput } from "./RangeInput"
 
 const FULL_RANGE = 6
 
-const RangeInput = ({
-	className,
-	readOnly,
-	...props
-}: React.ComponentPropsWithoutRef<"input">) => {
-	return (
-		<div className={cx("relative h-3 rounded-[10px] bg-gray-75", className)}>
-			<div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-between px-1">
-				<div className="h-1.5 w-1.5 rounded-full bg-gray-50" />
-				<div className="h-1.5 w-1.5 rounded-full bg-gray-50" />
-				<div className="h-1.5 w-1.5 rounded-full bg-gray-50" />
-				<div className="h-1.5 w-1.5 rounded-full bg-gray-50" />
-				<div className="h-1.5 w-1.5 rounded-full bg-gray-50" />
-				<div className="h-1.5 w-1.5 rounded-full bg-gray-50" />
-			</div>
-
-			<input
-				type="range"
-				readOnly={readOnly}
-				className={cx(
-					readOnly &&
-						"[&::-webkit-slider-thumb]:cursor-not-allowed [&::-webkit-slider-thumb]:bg-gray-82 [&::-webkit-slider-thumb]:bg-[url('/slider-arrows-read-only.svg')]",
-					"absolute inset-0 h-full w-full cursor-ew-resize appearance-none bg-transparent focus:outline-0 active:outline-0 [&::-webkit-slider-thumb]:h-8 [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-webkit-slider-thumb]:bg-[url('/slider-arrows.svg')] [&::-webkit-slider-thumb]:bg-center [&::-webkit-slider-thumb]:bg-no-repeat [&::-webkit-slider-thumb]:shadow-md",
-				)}
-				{...props}
-			/>
-		</div>
-	)
-}
-
-interface SliderProps {
+interface RangeSliderProps {
 	label: string
 	leftLabel: string
 	rightLabel: string
@@ -53,7 +24,7 @@ interface SliderProps {
 	rightImage?: MaybeSanityImage
 	className?: string
 }
-const Slider = ({
+const RangeSlider = ({
 	label,
 	leftLabel,
 	rightLabel,
@@ -64,7 +35,7 @@ const Slider = ({
 	rightImage,
 	className,
 	onClick,
-}: SliderProps) => {
+}: RangeSliderProps) => {
 	const leftToday = (value - 1) / (FULL_RANGE - 1)
 	const rightToday = 1 - leftToday
 
@@ -157,56 +128,79 @@ const Slider = ({
 }
 
 interface Props {
-	item: SliderItem
-	answer: Answer | undefined
-	actions: SliderActions
-	readOnly?: boolean
+	slider: SliderStep
+	id: string
+	stepAnswer?: SliderStepAnswer
+	readOnly: boolean
+	actions: Actions
+	stepIdx: number
+	className?: string
 }
 
 export const SliderPair = ({
-	item,
-	answer,
+	slider,
+	stepAnswer,
 	actions,
-	readOnly = false,
+	readOnly,
+	id,
+	stepIdx,
+	className,
 }: Props) => {
 	function onClick() {
 		if (readOnly) showContributorWarning()
 	}
 
+	function onTodayChange(e: React.ChangeEvent<HTMLInputElement>) {
+		if (readOnly) return
+
+		actions.send({
+			type: "update-slider",
+			pairType: "today",
+			value: e.target.valueAsNumber,
+			id,
+			stepIdx,
+		})
+	}
+	function onTomorrowChange(e: React.ChangeEvent<HTMLInputElement>) {
+		if (readOnly) return
+
+		actions.send({
+			type: "update-slider",
+			pairType: "tomorrow",
+			value: e.target.valueAsNumber,
+			id,
+			stepIdx,
+		})
+	}
+
 	return (
-		<div className="flex flex-col gap-4">
-			<h3>{item.question_text}</h3>
+		<div className={cx(className, "flex flex-col gap-4")}>
+			<Text asChild>
+				<h3>{slider.question_text}</h3>
+			</Text>
 
-			<Slider
-				label={item.today_text}
-				leftLabel={item.left_value}
-				rightLabel={item.right_value}
+			<RangeSlider
+				label={slider.today_text}
+				leftLabel={slider.left_value}
+				rightLabel={slider.right_value}
 				readOnly={readOnly}
-				value={answer?.today || 3}
-				leftImage={item.left_image}
-				rightImage={item.right_image}
+				value={stepAnswer?.today ?? DEFAULT_TODAY}
+				leftImage={slider.left_image}
+				rightImage={slider.right_image}
 				onClick={onClick}
-				onChange={(e) => {
-					if (readOnly) return
-
-					actions.setTodayValue({ today: parseInt(e.target.value) })
-				}}
+				onChange={onTodayChange}
 			/>
 
-			<Slider
-				label={item.tomorrow_text}
-				leftLabel={item.left_value}
-				rightLabel={item.right_value}
+			<RangeSlider
+				label={slider.tomorrow_text}
+				leftLabel={slider.left_value}
+				rightLabel={slider.right_value}
 				readOnly={readOnly}
-				value={answer?.tomorrow || 3}
-				leftImage={item.left_image}
-				rightImage={item.right_image}
+				value={stepAnswer?.tomorrow ?? DEFAULT_TOMORROW}
+				leftImage={slider.left_image}
+				rightImage={slider.right_image}
 				onClick={onClick}
-				onChange={(e) => {
-					if (readOnly) return
-
-					actions.setTomorrowValue({ tomorrow: parseInt(e.target.value) })
-				}}
+				onChange={onTomorrowChange}
 			/>
 		</div>
 	)

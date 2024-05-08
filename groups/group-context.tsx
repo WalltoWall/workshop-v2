@@ -16,7 +16,7 @@ import type {
 } from "@/party/types"
 import type { GroupRole } from "./messages"
 
-interface Actions {
+export interface Actions {
 	send: (message: PartyIncomingMessage) => void
 }
 

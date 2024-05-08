@@ -7,7 +7,6 @@ import { Scroller } from "./Scroller"
 
 interface Props {
 	params: { code: string }
-	searchParams: { [key: string]: string | string[] | undefined }
 }
 
 const KickoffOnboardingPage = async (props: Props) => {

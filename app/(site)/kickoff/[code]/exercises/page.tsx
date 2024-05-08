@@ -1,7 +1,7 @@
+import { ExerciseCard } from "@/components/ExerciseCard"
 import { Text } from "@/components/Text"
 import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
-import { ExerciseCard } from "./ExerciseCard"
 
 interface Props {
 	params: { code: string }
@@ -12,9 +12,6 @@ const ExercisesPage = async (props: Props) => {
 		client.findParticipantViaCookie(),
 		client.findKickoffOrThrow(props.params.code),
 	])
-
-	console.log({ participant })
-
 	assertOnboarded(participant, kickoff)
 
 	const code = props.params.code

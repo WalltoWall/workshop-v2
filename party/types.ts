@@ -4,6 +4,7 @@ import * as FormMessages from "@/exercises/form/messages"
 import type { FormAnswer } from "@/exercises/form/types"
 import type { QuadrantsAnswer } from "@/exercises/quadrants/types"
 import * as SharedMessages from "@/exercises/shared-messages"
+import * as SlidersMessages from "@/exercises/sliders/messages"
 import type { SliderAnswer } from "@/exercises/sliders/types"
 import * as GroupMessages from "@/groups/messages"
 
@@ -35,6 +36,9 @@ export const PartyIncomingMessage = z.discriminatedUnion("type", [
 	FormMessages.ChangeTaglineFieldItem,
 
 	FormMessages.ChangeTextField,
+
+	// Sliders Messages
+	SlidersMessages.UpdateSlider,
 ])
 export type PartyIncomingMessage = z.infer<typeof PartyIncomingMessage>
 

@@ -17,8 +17,8 @@ interface Props {
 	searchParams: { [key: string]: string | string[] | undefined }
 }
 
-const KickoffRegisterPage = async (props: Props) => {
-	const code = props.searchParams.code
+const KickoffRegisterPage = async ({ searchParams }: Props) => {
+	const code = searchParams.code
 	if (typeof code !== "string") notFound()
 
 	const [kickoff, participant] = await Promise.all([

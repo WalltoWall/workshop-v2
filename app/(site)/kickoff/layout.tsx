@@ -1,6 +1,6 @@
+import { LogoLink } from "@/components/LogoLink"
 import { client } from "@/sanity/client"
 import { ParticipantModal } from "./[code]/exercises/ParticipantModal"
-import { LogoLink } from "./LogoLink"
 
 const UnregisterLink = async () => {
 	const participant = await client.findParticipantViaCookie()

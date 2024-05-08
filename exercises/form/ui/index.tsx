@@ -3,10 +3,10 @@
 import React from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { useParams, useRouter } from "next/navigation"
-import { stripIndent } from "common-tags"
 import { Steps } from "@/components/Steps"
 import type * as ST from "@/sanity/types.gen"
 import { useGroupContext } from "@/groups/group-context"
+import { assertFormAnswer } from "../utils"
 import { FieldContainer } from "./FieldContainer"
 import { FieldProvider } from "./FieldContext"
 import { FieldRenderer } from "./FieldRenderer"
@@ -24,14 +24,7 @@ export const FormExercise = ({ exercise, participant, groupSlug }: Props) => {
 	const params = useParams()
 	const router = useRouter()
 	const { answer, role } = useGroupContext()
-
-	if (answer.type !== "form") {
-		throw new Error(stripIndent`
-			Invalid answer found for this exercise. 
-				Expected: "form"
-				Received: "${answer.type}"
-		`)
-	}
+	assertFormAnswer(answer)
 
 	if (!exercise.form || !exercise.form.steps) {
 		throw new Error("Invalid exercise found. Check form configuration!")
@@ -47,10 +40,10 @@ export const FormExercise = ({ exercise, participant, groupSlug }: Props) => {
 	const allSteps = exercise.form.steps
 	const allAnswers = answer.data[id] ?? []
 
-	const stepData = exercise.form.steps.at(stepIdx)
+	const stepData = allSteps.at(stepIdx)
 	const stepAnswer = allAnswers.at(stepIdx)
 
-	const onReviewScreen = stepIdx === exercise.form.steps.length
+	const onReviewScreen = stepIdx === allSteps.length
 
 	const goBackToExerciseList = () =>
 		router.push(`/kickoff/${params.code}/exercises`)

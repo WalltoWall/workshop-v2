@@ -1,11 +1,10 @@
 import React from "react"
+import { ExerciseCard } from "@/components/ExerciseCard"
 import { Text } from "@/components/Text"
 import { client } from "@/sanity/client"
-import { ExerciseCard } from "@/app/(site)/kickoff/[code]/exercises/ExerciseCard"
 
 interface Props {
 	params: { code: string }
-	searchParams: { [key: string]: string | string[] | undefined }
 }
 
 const PresenterKickoffPage = async (props: Props) => {

@@ -3,6 +3,7 @@ import { InstructionsModal } from "@/components/InstructionsModal"
 import { assertOnboarded } from "@/lib/assert-onboarded"
 import { client } from "@/sanity/client"
 import { FormExercise } from "@/exercises/form/ui"
+import { SlidersExercise } from "@/exercises/sliders/ui"
 
 interface Props {
 	params: { code: string; slug: string }
@@ -25,7 +26,7 @@ const ExercisePage = async (props: Props) => {
 	}
 
 	return (
-		<div className="flex flex-[1_1_0] flex-col gap-3">
+		<div className="flex flex-[1_1_0] flex-col gap-6">
 			<InstructionsModal
 				exerciseName={exercise.name}
 				instructions={exercise.instructions}
@@ -33,6 +34,10 @@ const ExercisePage = async (props: Props) => {
 
 			{exercise.type === "form" && (
 				<FormExercise exercise={exercise} participant={participant} />
+			)}
+
+			{exercise.type === "sliders" && (
+				<SlidersExercise exercise={exercise} participant={participant} />
 			)}
 		</div>
 	)

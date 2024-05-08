@@ -65,6 +65,8 @@ export const text = cva("", {
 	],
 	defaultVariants: {
 		trim: true,
+		size: 16,
+		style: "copy",
 	},
 })
 

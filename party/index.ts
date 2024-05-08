@@ -8,6 +8,7 @@ import {
 	type TaglineFieldAnswer,
 	type TextFieldAnswer,
 } from "@/exercises/form/types"
+import { DEFAULT_TODAY, DEFAULT_TOMORROW } from "@/exercises/sliders/constants"
 import {
 	ExerciseType,
 	PartyIncomingMessage,
@@ -73,7 +74,7 @@ export default class UnworkshopServer implements Party.Server {
 			case "quadrants":
 				return { type: "quadrants", step: 1 }
 			case "sliders":
-				return { type: "sliders", step: 1 }
+				return { type: "sliders", step: 1, data: {} }
 
 			default:
 				return { type: "unknown" }
@@ -86,7 +87,7 @@ export default class UnworkshopServer implements Party.Server {
 		init: T,
 	) {
 		if (this.answer.type !== "form") {
-			this.sendAndThrow("Expected a form field!", conn)
+			this.sendAndThrow("Expected a form answer!", conn)
 		}
 
 		// Initialize the list of step answers for this form exercise.
@@ -247,6 +248,30 @@ export default class UnworkshopServer implements Party.Server {
 					// Otherwise, add it to the list.
 					fieldAnswer.responses.push(msg.value)
 				}
+
+				this.broadcastAnswers()
+
+				break
+			}
+
+			case "update-slider": {
+				if (this.answer.type !== "sliders") {
+					this.sendAndThrow("Expected a slider answer!", conn)
+				}
+
+				// Initialize the list of sliders.
+				this.answer.data[msg.id] ??= []
+				const sliders = this.answer.data[msg.id]!
+
+				// Initialize an answer for this step.
+				sliders[msg.stepIdx] ??= {
+					today: DEFAULT_TODAY,
+					tomorrow: DEFAULT_TOMORROW,
+				}
+				const stepAnswer = sliders[msg.stepIdx]!
+
+				if (msg.pairType === "today") stepAnswer.today = msg.value
+				else stepAnswer.tomorrow = msg.value
 
 				this.broadcastAnswers()
 
